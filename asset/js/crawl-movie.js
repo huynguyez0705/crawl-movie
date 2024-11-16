@@ -9,13 +9,15 @@ function fetchJsonData(apiUrl) {
 }
 
 // Hàm trích xuất URL từ dữ liệu JSON và kiểm tra tên nhập vào
-function getUrls(jsonData, nameList) {
+function getUrls(jsonData, nameList, source) {
 	let namesToCheck = nameList.split('\n').map(name => name.trim().toLowerCase())
-
 	let latestItems = {}
 
+	// Lấy danh sách items từ nguồn phù hợp
+	let items = source === 'kkphim' ? jsonData.data.items : jsonData.items
+
 	// Lọc trùng tên và giữ lại item có thời gian mới nhất
-	jsonData.items.forEach(item => {
+	items.forEach(item => {
 		const itemName = item.name.toLowerCase()
 		const itemTime = new Date(item.modified.time)
 
@@ -33,7 +35,9 @@ function getUrls(jsonData, nameList) {
 		const slug = item.slug
 		const id = item._id
 		const modifiedTime = item.modified.time
-		const url = `https://apii.online/api/phim/${slug}|${id}|${modifiedTime}`
+
+		// Cấu trúc URL theo nguồn
+		const url = source === 'kkphim' ? `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}` : `https://ophim1.com/phim/${slug}|${id}|${modifiedTime}`
 
 		if (namesToCheck.includes(item.name.toLowerCase())) {
 			matchingUrls.push({ name: item.name, url: url })
@@ -49,6 +53,7 @@ function getUrls(jsonData, nameList) {
 function displayUrls() {
 	const apiUrl = document.getElementById('apiUrl').value
 	const nameList = document.getElementById('nameList').value
+	const sourceSelect = document.getElementById('sourceSelect').value
 	const nonMatchingTable = document.getElementById('nonMatchingTable')
 	const matchingTable = document.getElementById('matchingTable')
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount') // Tham chiếu đến phần tử đếm tên
@@ -58,39 +63,62 @@ function displayUrls() {
 
 	fetchJsonData(apiUrl)
 		.then(jsonData => {
-			const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList)
+			const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList, sourceSelect)
 
 			// Hiển thị số lượng tên duy nhất
 			uniqueNamesCount.textContent = `Số lượng tên duy nhất: ${Object.keys(latestItems).length}`
 
 			// Hiển thị các URL không bị trùng
-			nonMatchingUrls.forEach(item => {
-				let row = document.createElement('tr')
-				let nameCell = document.createElement('td')
-				let urlCell = document.createElement('td')
-				nameCell.textContent = item.name
-				urlCell.textContent = item.url
-				row.appendChild(nameCell)
-				row.appendChild(urlCell)
-				nonMatchingTable.appendChild(row)
-			})
+			updateTableWithMessage('nonMatchingTable', nonMatchingUrls, 'Không có URL không trùng khớp')
 
 			// Hiển thị các tên trùng và URL tương ứng
-			matchingUrls.forEach(item => {
-				let row = document.createElement('tr')
-				let nameCell = document.createElement('td')
-				let urlCell = document.createElement('td')
-				nameCell.textContent = item.name
-				urlCell.textContent = item.url
-				row.appendChild(nameCell)
-				row.appendChild(urlCell)
-				matchingTable.appendChild(row)
-			})
+			updateTableWithMessage('matchingTable', matchingUrls, 'Không có URL trùng khớp')
 		})
 		.catch(error => {
 			console.error('Lỗi khi tải JSON:', error)
+			alert('Không thể lấy dữ liệu từ API. Vui lòng kiểm tra URL.')
 		})
 }
+
+// Hàm cập nhật bảng với dữ liệu hoặc thông báo nếu không có dữ liệu
+function updateTableWithMessage(tableId, items, message) {
+	const tableBody = document.getElementById(tableId)
+	tableBody.innerHTML = '' // Clear previous content
+
+	if (items.length === 0) {
+		const row = document.createElement('tr')
+		const cell = document.createElement('td')
+		cell.colSpan = 2 // Merge columns
+		cell.textContent = message
+		row.appendChild(cell)
+		tableBody.appendChild(row)
+		return
+	}
+
+	items.forEach(item => {
+		const row = document.createElement('tr')
+		const nameCell = document.createElement('td')
+		const urlCell = document.createElement('td')
+		nameCell.textContent = item.name
+		urlCell.textContent = item.url
+		row.appendChild(nameCell)
+		row.appendChild(urlCell)
+		tableBody.appendChild(row)
+	})
+}
+
+// Hàm sao chép nội dung vào clipboard
+function copyToClipboard(text) {
+	navigator.clipboard
+		.writeText(text)
+		.then(() => {
+			alert('Đã sao chép thành công!')
+		})
+		.catch(err => {
+			console.error('Lỗi khi sao chép:', err)
+		})
+}
+
 // Hàm sao chép tên không trùng khớp
 function copyNonMatchingNames() {
 	const nonMatchingTable = document.getElementById('nonMatchingTable')
@@ -119,18 +147,6 @@ function copyMatchingUrls() {
 		urls.push(cell.textContent)
 	})
 	copyToClipboard(urls.join('\n'))
-}
-
-// Hàm sao chép nội dung vào clipboard
-function copyToClipboard(text) {
-	navigator.clipboard
-		.writeText(text)
-		.then(() => {
-			alert('Đã sao chép thành công!')
-		})
-		.catch(err => {
-			console.error('Lỗi khi sao chép:', err)
-		})
 }
 
 // Gắn sự kiện click vào button hiển thị URL
