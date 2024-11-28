@@ -145,3 +145,42 @@ td {
 .buttonIn select:hover {
 	border-color: #4caf50;
 }
+/* Toast container - chứa tất cả các thông báo */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* Toast notification style */
+.toast {
+    background-color: #4caf50; /* Màu nền của toast, có thể thay đổi */
+    color: white;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Hiệu ứng khi đóng toast */
+.toast .close-btn {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-left: 10px;
+}
+
+.toast.hide {
+    opacity: 0; /* Khi ẩn toast */
+}
+
+  
