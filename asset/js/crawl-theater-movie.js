@@ -67,7 +67,7 @@ function getUrls(jsonData, nameList) {
     });
 
     if (!hasChieuRap) {
-        showToast('Không có phim chiếu rạp nào');
+        showToast('Không có phim chiếu rạp nào',error);
         return { nonMatchingUrls: [], matchingUrls: [], latestItems: {} };
     }
 
@@ -191,7 +191,7 @@ function copyTableColumn(tableId, columnIndex) {
     });
 
     if (values.length === 0) {
-		showToast('Không có dữ liệu để sao chép.');
+		showToast('Không có dữ liệu để sao chép.', error);
         return;
     }
 
@@ -212,8 +212,8 @@ function copyToClipboard(text) {
             showToast('Đã sao chép vào clipboard!');
         })
         .catch(err => {
-			showToast('Lỗi khi sao chép!');
-            console.error('Lỗi khi sao chép:', err);
+			showToast('Lỗi khi sao chép!',error);
+            console.error('Lỗi khi sao chép:');
         });
 }
 
