@@ -8,6 +8,7 @@ function fetchJsonData(apiUrl, page) {
 		return response.json()
 	})
 }
+
 // Hàm để tạo và hiển thị toast notifications
 function showToast(message, type = 'success') {
 	// Tạo phần tử toast
@@ -47,6 +48,7 @@ function showToast(message, type = 'success') {
 		setTimeout(() => toast.remove(), 500) // Sau 0.5s, xóa toast khỏi DOM
 	}, 3000)
 }
+
 // Hàm trích xuất URL từ dữ liệu JSON và kiểm tra tên nhập vào
 function getUrls(jsonData, nameList) {
 	let namesToCheck = nameList.split('\n').map(name => name.trim().toLowerCase())
@@ -67,7 +69,7 @@ function getUrls(jsonData, nameList) {
 	})
 
 	if (!hasChieuRap) {
-		showToast('Không có phim chiếu rạp nào', error)
+		showToast('Không có phim chiếu rạp nào', 'error')
 		return { nonMatchingUrls: [], matchingUrls: [], latestItems: {} }
 	}
 
@@ -82,12 +84,11 @@ function getUrls(jsonData, nameList) {
 		const orginal_name = item.origin_name
 		const year = item.year
 		const url = `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}|${name}|${orginal_name}|${year}`
-		const urlSecond = `https://apii.online/api/phim/${slug}`
 
 		if (namesToCheck.includes(item.name.toLowerCase())) {
-			matchingUrls.push({ name: item.name, url: url, urlSecond: urlSecond })
+			matchingUrls.push({ name: item.name, url: url })
 		} else {
-			nonMatchingUrls.push({ name: item.name, url: url, urlSecond: urlSecond })
+			nonMatchingUrls.push({ name: item.name, url: url })
 		}
 	})
 
@@ -148,15 +149,12 @@ function displayUrls() {
 			let row = document.createElement('tr')
 			let nameCell = document.createElement('td')
 			let urlCell = document.createElement('td')
-			let urlSecondCell = document.createElement('td')
 
 			nameCell.textContent = item.name
 			urlCell.textContent = item.url
-			urlSecondCell.textContent = item.urlSecond
 
 			row.appendChild(nameCell)
 			row.appendChild(urlCell)
-			row.appendChild(urlSecondCell)
 			nonMatchingTable.appendChild(row)
 		})
 
@@ -165,15 +163,12 @@ function displayUrls() {
 			let row = document.createElement('tr')
 			let nameCell = document.createElement('td')
 			let urlCell = document.createElement('td')
-			let urlSecondCell = document.createElement('td')
 
 			nameCell.textContent = item.name
 			urlCell.textContent = item.url
-			urlSecondCell.textContent = item.urlSecond
 
 			row.appendChild(nameCell)
 			row.appendChild(urlCell)
-			row.appendChild(urlSecondCell)
 			matchingTable.appendChild(row)
 		})
 	}
@@ -182,7 +177,7 @@ function displayUrls() {
 	fetchAllPages(startPage)
 }
 
-// Hàm sao chép cột cụ thể (Name, URL 1, URL 2) từ bảng được chỉ định vào clipboard
+// Hàm sao chép cột cụ thể (Name, URL 1) từ bảng được chỉ định vào clipboard
 function copyTableColumn(tableId, columnIndex) {
 	const table = document.getElementById(tableId)
 	let values = []
@@ -194,7 +189,7 @@ function copyTableColumn(tableId, columnIndex) {
 	})
 
 	if (values.length === 0) {
-		showToast('Không có dữ liệu để sao chép.', error)
+		showToast('Không có dữ liệu để sao chép.', 'error')
 		return
 	}
 
@@ -215,7 +210,7 @@ function copyToClipboard(text) {
 			showToast('Đã sao chép vào clipboard!')
 		})
 		.catch(err => {
-			showToast('Lỗi khi sao chép!', error)
+			showToast('Lỗi khi sao chép!', 'error')
 			console.error('Lỗi khi sao chép:')
 		})
 }
@@ -226,9 +221,7 @@ document.getElementById('getUrlsButton').addEventListener('click', displayUrls)
 // Non-matching table buttons
 document.getElementById('copyNonMatchingNamesButton').addEventListener('click', () => copyTableColumn('nonMatchingTable', 0))
 document.getElementById('copyNonMatchingUrl1Button').addEventListener('click', () => copyTableColumn('nonMatchingTable', 1))
-document.getElementById('copyNonMatchingUrl2Button').addEventListener('click', () => copyTableColumn('nonMatchingTable', 2))
 
 // Matching table buttons
 document.getElementById('copyMatchingNamesButton').addEventListener('click', () => copyTableColumn('matchingTable', 0))
-document.getElementById('copyMatchingUrl1Button').addEventListener('click', () => copyTableColumn('matchingTable', 1))
-document.getElementById('copyMatchingUrl2Button').addEventListener('click', () => copyTableColumn('matchingTable', 2))
+document.getElementById('copyMatchingUrl1Button').add
