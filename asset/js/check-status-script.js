@@ -48,7 +48,7 @@ function displayResults(results) {
 
 		// Full URL cell
 		const fullUrlCell = document.createElement('td')
-		fullUrlCell.textContent = status ? fullUrl : '' // Display full URL only if status is true
+		fullUrlCell.textContent = status ? fullUrl : 'None' // Display full URL only if status is true
 		row.appendChild(fullUrlCell)
 
 		// Status cell
@@ -69,10 +69,10 @@ async function checkUrlStatus(url) {
 
 		// Check if status is true and generate full URL format
 		if (data.status === true && data.movie && data.movie._id && data.movie.modified && data.movie.modified.time) {
-			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}`
+			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}|${data.movie.name}|${data.movie.origin_name}|${data.movie.year}`
 			return { status: true, fullUrl: fullUrl }
 		} else {
-			return { status: false, fullUrl: '' }
+			return { status: false, fullUrl: 'None' }
 		}
 	} catch (error) {
 		console.error('Error fetching URL:', error)

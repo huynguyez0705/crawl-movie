@@ -35,9 +35,12 @@ function getUrls(jsonData, nameList, source) {
 		const slug = item.slug
 		const id = item._id
 		const modifiedTime = item.modified.time
+		const name = item.name
+		const origin_name = item.origin_name
+		const year = item.year
 
 		// Cấu trúc URL theo nguồn
-		const url = source === 'kkphim' ? `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}` : `https://ophim1.com/phim/${slug}|${id}|${modifiedTime}`
+		const url = source === 'kkphim' ? `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}|${name}|${origin_name}|${year}` : `https://ophim1.com/phim/${slug}|${id}|${modifiedTime}`
 
 		if (namesToCheck.includes(item.name.toLowerCase())) {
 			matchingUrls.push({ name: item.name, url: url })
