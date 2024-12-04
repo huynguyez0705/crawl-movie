@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Log files
+*.log
+
+# Build output
+/dist
+/build
+
+# Nền tảng khác
+.DS_Store
+
+# Thư mục hệ thống hoặc cài đặt tạm thời
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron app build output
+*.asar
+*.exe
+*.dmg
+*.app
+
+# Thư mục của IDE
+.idea/
+.vscode/
+
+# Các tệp khác không cần thiết (tùy vào nhu cầu của bạn)
+*.env

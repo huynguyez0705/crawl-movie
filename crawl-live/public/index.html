@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Web Scraping with Electron</title>
+	</head>
+	<body>
+		<h1>Web Scraping Tool</h1>
+		<div>
+			<label for="baseUrl">Base URL:</label>
+			<input type="text" id="baseUrl" value="https://ophim17.cc/the-loai/phim-18" />
+		</div>
+		<div>
+			<label for="startPage">Start Page:</label>
+			<input type="number" id="startPage" value="1" />
+		</div>
+		<div>
+			<label for="endPage">End Page:</label>
+			<input type="number" id="endPage" value="2" />
+		</div>
+		<button id="fetchDataBtn">Fetch Data</button>
+		<div id="status"></div>
+
+		<script src="../src/renderer.js"></script>
+	</body>
+</html>
