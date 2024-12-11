@@ -1,3 +1,7 @@
+:root {
+	--button-color: #4caf50;
+}
+
 body {
 	font-family: Arial, sans-serif;
 	margin: 0;
@@ -39,7 +43,7 @@ body {
 
 .buttonIn button {
 	width: 100%;
-	background-color: #4caf50;
+	background-color: var(--button-color);
 	color: white;
 	border-radius: 5px;
 	cursor: pointer;
@@ -107,6 +111,7 @@ td {
 	box-sizing: border-box;
 	word-wrap: break-word;
 }
+
 /* Cột đầu tiên chiếm 25% */
 th:nth-child(1),
 td:nth-child(1) {
@@ -130,7 +135,7 @@ td:nth-child(3) {
 .button-group button {
 	margin: 0 5px;
 	padding: 10px;
-	background-color: #4caf50;
+	background-color: var(--button-color);
 	color: white;
 	border: none;
 	border-radius: 5px;
@@ -156,20 +161,22 @@ td:nth-child(3) {
 }
 
 .buttonIn select:hover {
-	border-color: #4caf50;
+	border-color: var(--button-color);
 }
+
 /* Toast container - chứa tất cả các thông báo */
 .toast-container {
 	position: fixed;
-	bottom: 20px;
-	left: 50%;
-	transform: translateX(-50%);
+	top: 50%;
+	right: 20px;
+	transform: translateY(-50%);
 	z-index: 1000;
+	width: fit-content;
 }
 
 /* Toast notification style */
 .toast {
-	background-color: #4caf50; /* Màu nền của toast, có thể thay đổi */
+	background-color: var(--button-color); /* Màu nền của toast */
 	color: white;
 	padding: 10px 20px;
 	margin-bottom: 10px;
@@ -194,4 +201,43 @@ td:nth-child(3) {
 
 .toast.hide {
 	opacity: 0; /* Khi ẩn toast */
+}
+
+/* Styling cho radio button */
+#crawlModeWrapper {
+	margin: 1em;
+}
+
+#crawlModeWrapper label {
+	font-size: 16px;
+}
+
+input[type='checkbox'] {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	width: 20px;
+	height: 20px;
+	background-color: #fff;
+	border: 2px solid var(--button-color);
+	cursor: pointer;
+	position: relative;
+	border-radius: 5px;
+	top: 8px;
+}
+
+/* Khi checkbox được chọn */
+input[type='checkbox']:checked {
+	background-color: var(--button-color);
+}
+
+/* Dấu tick màu trắng */
+input[type='checkbox']:checked::after {
+	content: '✔'; /* Dấu tick */
+	color: #fff; /* Màu trắng cho dấu tick */
+	font-size: 14px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }

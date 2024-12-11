@@ -11,20 +11,30 @@
 		<p id="uniqueNamesCount">Số lượng tên duy nhất: 0</p>
 
 		<div class="buttonIn">
-			<!-- Chọn nguồn dữ liệu -->
 			<label for="sourceSelect">Chọn nguồn:</label>
 			<select id="sourceSelect">
 				<option value="kkphim">KKPhim</option>
 				<option value="ophim">OPhim</option>
 			</select>
 
-			<input type="text" id="apiUrl" placeholder="Nhập link API..." size="50" />
+			<input type="text" id="apiUrl" placeholder="Nhập link API..." size="50" value="https://phimapi.com/v1/api/danh-sach/phim-le" />
+			<input type="number" id="startPage" placeholder="Nhập số trang bắt đầu..." value="1" />
+			<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." />
 			<textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
 			<button id="getUrlsButton">Hiển Thị URL</button>
+
+			<!-- Radio button chỉ xuất hiện khi chọn KKPhim -->
+
 			<div class="button-group-horizontal">
 				<a href="./page/crawl-theater-movie.html" style="color: #fff"><button>Crawl Chiếu Rạp</button></a>
 				<a href="./page/check-status.html" style="color: #fff"><button>Check Trạng Thái</button></a>
+				<a onclick="location.reload()"><button>Làm Mới</button></a>
 			</div>
+		</div>
+		<div id="crawlModeWrapper" class="crawl-mode-options" style="display: none">
+			<div for="crawlMode">Chọn chế độ Crawl:</div>
+			<label for="crawlTheater">Chiếu rạp</label>
+			<input type="checkbox" name="crawlMode" value="theater" id="crawlTheater" />
 		</div>
 
 		<div class="container">
@@ -60,6 +70,7 @@
 				</table>
 			</div>
 		</div>
+		<div class="toast-container"></div>
 
 		<script src="./asset/js/crawl-movie.js"></script>
 	</body>

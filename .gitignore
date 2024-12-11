@@ -1,5 +1,6 @@
 # Node modules
-/node_modules/
+/crawl-live/node_modules/
+
 # Log files
 *.log
 
