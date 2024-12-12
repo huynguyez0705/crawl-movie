@@ -8,13 +8,13 @@
 	</head>
 	<body>
 		<h1>Kiểm tra trạng thái URL</h1>
-
+		<p id="uniqueNamesCount" style="display: none">Số lượng tên duy nhất: 0</p>
 		<div class="buttonIn">
-			<textarea id="urlList" placeholder="Nhập danh sách URL, mỗi URL trên một dòng..."></textarea>
-			<button id="checkUrlsButton">Kiểm tra trạng thái URL</button>
+			<textarea id="urlList" placeholder="Nhập danh sách URL, mỗi URL trên một dòng..." aria-label="Nhập danh sách URL"></textarea>
+			<button id="checkUrlsButton" aria-label="Kiểm tra trạng thái URL">Kiểm tra trạng thái URL</button>
 			<div class="button-group-horizontal">
-				<a href="../index.html" style="color: #fff"><button>Crawl Movie</button></a>
-				<a href="./crawl-theater-movie.html" style="color: #fff"><button>Crawl Chiếu Rạp</button></a>
+				<a href="../index.html" style="color: #fff" rel="noopener noreferrer"><button>Crawl Movie</button></a>
+				<a href="./crawl-theater-movie.html" style="color: #fff" rel="noopener noreferrer"><button>Crawl Chiếu Rạp</button></a>
 			</div>
 		</div>
 
@@ -27,17 +27,16 @@
 				<thead>
 					<tr>
 						<th>URL</th>
-						<th>URL Hoàn Chỉnh</th>
-						<th>Trạng Thái</th>
+						<th style="width: 50%">URL Hoàn Chỉnh</th>
+						<th style="width: 10%">Trạng Thái</th>
+						<th>Danh mục</th>
 					</tr>
 				</thead>
 				<tbody id="urlStatusTable"></tbody>
 			</table>
 		</div>
+		<div class="toast-container"></div>
 
-		<!-- Button to Copy Status Column -->
-
-		<!-- JavaScript file for checking URL statuses -->
 		<script src="../asset/js/check-status-script.js"></script>
 	</body>
 </html>

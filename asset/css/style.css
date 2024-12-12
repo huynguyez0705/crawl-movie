@@ -8,6 +8,14 @@ body {
 	padding: 20px;
 	background-color: #f4f4f4;
 }
+#uniqueNamesCount {
+	line-height: 1.8;
+	color: var(--button-color);
+}
+.line-break {
+	color: #ff0000;
+	display: block;
+}
 
 .buttonIn {
 	width: 50%;
@@ -165,6 +173,7 @@ td:nth-child(3) {
 }
 
 /* Toast container - chứa tất cả các thông báo */
+/* Toast container - fixed position on the right side */
 .toast-container {
 	position: fixed;
 	top: 50%;

@@ -1,111 +1,215 @@
-// Function to check the status of each URL entered in the textarea
+// Hàm kiểm tra trạng thái các URL
 document.getElementById('checkUrlsButton').addEventListener('click', () => {
 	const urlList = document.getElementById('urlList').value.trim().split('\n')
 	const urlStatusTable = document.getElementById('urlStatusTable')
-	urlStatusTable.innerHTML = '' // Clear previous results
+	urlStatusTable.innerHTML = '' // Xóa kết quả trước đó
+	function validateURL(url) {
+		const regex = /^https:\/\/[^\s]+$/ // Kiểm tra URL có bắt đầu bằng https://
+		return regex.test(url)
+	}
+	if (urlList.length === 0 || urlList.some(url => url.trim() === '')) {
+		showToast('Vui lòng nhập ít nhất một URL hợp lệ.', 'error')
+		return
+	}
+	function showToast(message, type = 'success') {
+		const toast = document.createElement('div')
+		toast.classList.add('toast', 'show')
 
-	const statusResults = [] // To store the results in the correct order
+		if (type === 'success') {
+			toast.style.backgroundColor = '#4caf50' // Màu xanh cho thành công
+		} else if (type === 'error') {
+			toast.style.backgroundColor = '#f44336' // Màu đỏ cho lỗi
+		} else if (type === 'info') {
+			toast.style.backgroundColor = '#2196F3' // Màu xanh dương cho thông tin
+		}
 
-	// Fetch status for each URL in the order they were pasted
+		toast.textContent = message
+
+		const closeBtn = document.createElement('span')
+		closeBtn.classList.add('close-btn')
+		closeBtn.textContent = '×'
+		closeBtn.addEventListener('click', () => {
+			toast.classList.add('hide')
+			setTimeout(() => toast.remove(), 500)
+		})
+		toast.appendChild(closeBtn)
+
+		// Thêm toast vào container
+		const toastContainer = document.querySelector('.toast-container')
+		toastContainer.appendChild(toast)
+
+		// Tự động ẩn toast sau 10 giây
+		setTimeout(() => {
+			toast.classList.add('hide')
+			setTimeout(() => toast.remove(), 500)
+		}, 3000000)
+	}
+
+	const statusResults = [] // Lưu kết quả trạng thái cho mỗi URL
+
+	// Lấy trạng thái của từng URL trong danh sách
 	urlList.forEach((url, index) => {
 		if (url) {
+			if (!validateURL(url)) {
+				showToast(`URL không hợp lệ: ${url}`, 'error')
+
+				return // Dừng việc xử lý với URL không hợp lệ
+			}
 			checkUrlStatus(url)
 				.then(result => {
-					// Store result at the original index
-					statusResults[index] = { url, status: result.status, fullUrl: result.fullUrl }
+					// Lưu kết quả tại chỉ số gốc của URL
+					statusResults[index] = { url, status: result.status, fullUrl: result.fullUrl, type: result.type, chieurap: result.chieurap }
 
-					// Only render table once all results are available
+					// Chỉ hiển thị bảng khi tất cả kết quả có mặt
 					if (statusResults.filter(Boolean).length === urlList.length) {
 						displayResults(statusResults)
 					}
 				})
 				.catch(() => {
-					// Handle errors by marking status as "False" (failed requests)
-					statusResults[index] = { url, status: false, fullUrl: '' }
+					// Xử lý lỗi, đánh dấu trạng thái là "False"
+					statusResults[index] = { url, status: false, fullUrl: '', type: '', chieurap: false }
 
 					if (statusResults.filter(Boolean).length === urlList.length) {
 						displayResults(statusResults)
 					}
 				})
 		} else {
-			statusResults[index] = { url: '', status: false, fullUrl: '' }
+			statusResults[index] = { url: '', status: false, fullUrl: '', type: '', chieurap: false }
 		}
 	})
 })
 
-// Function to display results in the correct order
+// Hàm hiển thị kết quả
 function displayResults(results) {
 	const urlStatusTable = document.getElementById('urlStatusTable')
-	urlStatusTable.innerHTML = '' // Clear previous table entries
+	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
 
-	results.forEach(({ url, fullUrl, status }) => {
+	urlStatusTable.innerHTML = '' // Xóa bảng cũ
+	uniqueNamesCount.style.display = 'block'
+	uniqueNamesCount.textContent = 'Đang tải...'
+
+	let countTrue = 0
+	let countFalse = 0
+
+	results.forEach(({ url, fullUrl, status, type, chieurap }) => {
 		const row = document.createElement('tr')
 
-		// URL cell
+		// Tạo cột URL
 		const urlCell = document.createElement('td')
 		urlCell.textContent = url
 		row.appendChild(urlCell)
 
-		// Full URL cell
+		// Tạo cột URL hoàn chỉnh
 		const fullUrlCell = document.createElement('td')
-		fullUrlCell.textContent = status ? fullUrl : 'None' // Display full URL only if status is true
+		fullUrlCell.textContent = status ? fullUrl : 'None' // Hiển thị full URL chỉ khi trạng thái là true
 		row.appendChild(fullUrlCell)
 
-		// Status cell
+		// Tạo cột trạng thái
 		const statusCell = document.createElement('td')
 		statusCell.textContent = status ? 'True' : 'False'
 		statusCell.style.color = status ? 'green' : 'red'
 		row.appendChild(statusCell)
 
+		// Tạo cột danh mục (Type và Chieurap kết hợp trong một cột)
+		const categoriesCell = document.createElement('td')
+		let categoriesText = ''
+
+		// Nếu type có giá trị, chúng ta sẽ hiển thị
+		if (status) {
+			categoriesText += type === 'single_movies' || type === 'single' ? 'Phim Lẻ' : ''
+			categoriesText += type === 'hoathinh' ? 'Hoạt Hình' : ''
+			categoriesText += type === 'tvshows' ? 'TV Shows' : ''
+			categoriesText += type === 'tv_series' || type === 'series' ? 'Phim bộ' : ''
+		}
+
+		// Nếu chieurap là true, thêm "Phim chiếu rạp"
+		if (chieurap) {
+			if (categoriesText) {
+				categoriesText += ', ' // Thêm dấu phẩy nếu đã có loại
+			}
+			categoriesText += 'Phim chiếu rạp'
+		}
+
+		categoriesCell.textContent = categoriesText
+		row.appendChild(categoriesCell)
+
+		// Thêm dòng vào bảng
 		urlStatusTable.appendChild(row)
+
+		// Tăng số lượng phim thành công và không thành công
+		status ? countTrue++ : countFalse++
 	})
+
+	// Cập nhật thông tin số lượng tên duy nhất
+	uniqueNamesCount.innerHTML = `Có ${countTrue} phim crawl hoàn thành <span class="line-break">Có ${countFalse} phim không crawl được</span>`
+
+	// Hiển thị thông báo thành công nếu có phim crawl thành công
+	if (countTrue > 0) {
+		showToast(`Có ${countTrue} phim crawl hoàn thành`, 'success')
+	}
+
+	// Hiển thị thông báo lỗi nếu có phim không crawl được
+	if (countFalse > 0) {
+		showToast(`Có ${countFalse} phim không crawl được`, 'error')
+	}
+	showToast('Hoàn thành')
 }
 
-// Function to check the status of a single URL and generate full URL if status is true
+// Hàm hiển thị thông báo (toast)
+
+// Hàm kiểm tra trạng thái URL và trả về full URL nếu trạng thái là true
 async function checkUrlStatus(url) {
 	try {
 		const response = await fetch(url)
 		const data = await response.json()
 
-		// Check if status is true and generate full URL format
-		if (data.status === true && data.movie && data.movie._id && data.movie.modified && data.movie.modified.time) {
+		// Kiểm tra nếu status là true và đảm bảo rằng các trường movie và thông tin cần thiết có mặt
+		if (data.status === true && data.movie) {
+			const type = data.movie.type || '' // Lấy type, nếu không có trả về chuỗi rỗng
+			const chieurap = data.movie.chieurap === true // Kiểm tra trạng thái chiếu rạp
+			// Tạo full URL
 			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}|${data.movie.name}|${data.movie.origin_name}|${data.movie.year}`
-			return { status: true, fullUrl: fullUrl }
+			showToast('Crawl Thành công')
+			return { status: true, fullUrl: fullUrl, type: type, chieurap: chieurap }
 		} else {
-			return { status: false, fullUrl: 'None' }
+			// Trả về dữ liệu mặc định khi không có thông tin hợp lệ
+			return { status: false, fullUrl: 'None', type: '', chieurap: false }
 		}
 	} catch (error) {
-		console.error('Error fetching URL:', error)
-		return { status: false, fullUrl: '' }
+		// Xử lý khi có lỗi trong quá trình fetch dữ liệu
+		console.error('Lỗi khi lấy dữ liệu từ URL:', error)
+		showToast('Lỗi khi lấy dữ liệu từ URL: ' + error, 'error')
+		return { status: false, fullUrl: '', type: '', chieurap: false }
 	}
 }
 
-// Copy Status Button
+// Hàm sao chép trạng thái vào clipboard
 document.getElementById('copyStatusButton').addEventListener('click', () => {
 	const statusCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(3)'))
 	const statusText = statusCells.map(cell => cell.textContent).join('\n')
 
-	// Copy to clipboard
+	// Sao chép vào clipboard
 	copyToClipboard(statusText)
-	alert('Đã sao chép trạng thái vào clipboard!')
+	showToast('Đã sao chép trạng thái vào clipboard!')
 })
 
-// Copy Full URL Button
+// Hàm sao chép full URL vào clipboard
 document.getElementById('copyFullUrlButton').addEventListener('click', () => {
 	const fullUrlCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(2)'))
 	const fullUrlText = fullUrlCells
 		.map(cell => cell.textContent)
-		.filter(text => text)
-		.join('\n') // Filter empty cells
+		.filter(text => text) // Lọc bỏ các ô trống
+		.join('\n')
 
-	// Copy to clipboard
+	// Sao chép vào clipboard
 	copyToClipboard(fullUrlText)
-	alert('Đã sao chép URL Hoàn Chỉnh vào clipboard!')
+	showToast('Đã sao chép URL Hoàn Chỉnh vào clipboard!')
 })
 
-// Function to copy text to clipboard
+// Hàm sao chép văn bản vào clipboard
 function copyToClipboard(text) {
 	navigator.clipboard.writeText(text).catch(err => {
+		showToast(`Lỗi khi sao chép: ${err}`, 'error')
 		console.error('Lỗi khi sao chép:', err)
 	})
 }
