@@ -7,42 +7,9 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 		const regex = /^https:\/\/[^\s]+$/ // Kiểm tra URL có bắt đầu bằng https://
 		return regex.test(url)
 	}
-	if (urlList.length === 0 || urlList.some(url => url.trim() === '')) {
+	if (urlList.every(url => url.trim() === '')) {
 		showToast('Vui lòng nhập ít nhất một URL hợp lệ.', 'error')
 		return
-	}
-	function showToast(message, type = 'success') {
-		const toast = document.createElement('div')
-		toast.classList.add('toast', 'show')
-
-		if (type === 'success') {
-			toast.style.backgroundColor = '#4caf50' // Màu xanh cho thành công
-		} else if (type === 'error') {
-			toast.style.backgroundColor = '#f44336' // Màu đỏ cho lỗi
-		} else if (type === 'info') {
-			toast.style.backgroundColor = '#2196F3' // Màu xanh dương cho thông tin
-		}
-
-		toast.textContent = message
-
-		const closeBtn = document.createElement('span')
-		closeBtn.classList.add('close-btn')
-		closeBtn.textContent = '×'
-		closeBtn.addEventListener('click', () => {
-			toast.classList.add('hide')
-			setTimeout(() => toast.remove(), 500)
-		})
-		toast.appendChild(closeBtn)
-
-		// Thêm toast vào container
-		const toastContainer = document.querySelector('.toast-container')
-		toastContainer.appendChild(toast)
-
-		// Tự động ẩn toast sau 10 giây
-		setTimeout(() => {
-			toast.classList.add('hide')
-			setTimeout(() => toast.remove(), 500)
-		}, 3000000)
 	}
 
 	const statusResults = [] // Lưu kết quả trạng thái cho mỗi URL
@@ -182,6 +149,39 @@ async function checkUrlStatus(url) {
 		return { status: false, fullUrl: '', type: '', chieurap: false }
 	}
 }
+function showToast(message, type = 'success') {
+	const toast = document.createElement('div')
+	toast.classList.add('toast', 'show')
+
+	if (type === 'success') {
+		toast.style.backgroundColor = '#4caf50' // Màu xanh cho thành công
+	} else if (type === 'error') {
+		toast.style.backgroundColor = '#f44336' // Màu đỏ cho lỗi
+	} else if (type === 'info') {
+		toast.style.backgroundColor = '#2196F3' // Màu xanh dương cho thông tin
+	}
+
+	toast.textContent = message
+
+	const closeBtn = document.createElement('span')
+	closeBtn.classList.add('close-btn')
+	closeBtn.textContent = '×'
+	closeBtn.addEventListener('click', () => {
+		toast.classList.add('hide')
+		setTimeout(() => toast.remove(), 500)
+	})
+	toast.appendChild(closeBtn)
+
+	// Thêm toast vào container
+	const toastContainer = document.querySelector('.toast-container')
+	toastContainer.appendChild(toast)
+
+	// Tự động ẩn toast sau 10 giây
+	setTimeout(() => {
+		toast.classList.add('hide')
+		setTimeout(() => toast.remove(), 500)
+	}, 3000000)
+}
 
 // Hàm sao chép trạng thái vào clipboard
 document.getElementById('copyStatusButton').addEventListener('click', () => {
@@ -196,6 +196,17 @@ document.getElementById('copyStatusButton').addEventListener('click', () => {
 // Hàm sao chép full URL vào clipboard
 document.getElementById('copyFullUrlButton').addEventListener('click', () => {
 	const fullUrlCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(2)'))
+	const fullUrlText = fullUrlCells
+		.map(cell => cell.textContent)
+		.filter(text => text) // Lọc bỏ các ô trống
+		.join('\n')
+
+	// Sao chép vào clipboard
+	copyToClipboard(fullUrlText)
+	showToast('Đã sao chép URL Hoàn Chỉnh vào clipboard!')
+})
+document.getElementById('copyFullUrlName').addEventListener('click', () => {
+	const fullUrlCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(1)'))
 	const fullUrlText = fullUrlCells
 		.map(cell => cell.textContent)
 		.filter(text => text) // Lọc bỏ các ô trống
