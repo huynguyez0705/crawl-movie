@@ -136,7 +136,6 @@ async function checkUrlStatus(url) {
 			const chieurap = data.movie.chieurap === true // Kiểm tra trạng thái chiếu rạp
 			// Tạo full URL
 			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}|${data.movie.name}|${data.movie.origin_name}|${data.movie.year}`
-			showToast('Crawl Thành công')
 			return { status: true, fullUrl: fullUrl, type: type, chieurap: chieurap }
 		} else {
 			// Trả về dữ liệu mặc định khi không có thông tin hợp lệ
