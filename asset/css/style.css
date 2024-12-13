@@ -290,8 +290,9 @@ input[type='checkbox']:checked::after {
 
 #currentPageInfo #currentPage.jump {
 	transform: scale(1.2);
-	opacity: 0;
+	opacity: 1;
 }
+
 #progressWrapper {
 	width: 50%;
 	margin: 20px 0;
