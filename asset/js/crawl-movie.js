@@ -60,8 +60,6 @@ function getUrls(jsonData, nameList, source) {
 	let namesToCheck = nameList.split('\n').map(name => name.trim().toLowerCase())
 	let latestItems = {}
 	let hasChieuRap = false // Biến kiểm tra có phim chiếu rạp hay không
-
-	// Kiểm tra nếu người dùng chọn chế độ "Chỉ Crawl Phim Chiếu Rạp"
 	const isChieuRapOnly = document.getElementById('crawlTheater').checked
 
 	let items = source === 'kkphim' ? jsonData.data?.items || [] : jsonData.items || []
@@ -76,13 +74,9 @@ function getUrls(jsonData, nameList, source) {
 	function processItem(item) {
 		const itemName = item.name.toLowerCase()
 		const itemTime = new Date(item.modified.time)
-
-		// Kiểm tra nếu item mới hơn thì cập nhật lại
 		if (!latestItems[itemName] || itemTime > new Date(latestItems[itemName].modified.time)) {
 			latestItems[itemName] = item
 		}
-
-		// Nếu item là phim chiếu rạp và chế độ đang chọn "Chỉ Crawl Phim Chiếu Rạp", đánh dấu
 		if (item.chieurap === true) {
 			hasChieuRap = true
 		}
@@ -90,7 +84,6 @@ function getUrls(jsonData, nameList, source) {
 
 	// Lọc và xử lý item dựa trên chế độ đã chọn
 	if (isChieuRapOnly) {
-		// Nếu chỉ lấy phim chiếu rạp, xử lý và lọc
 		items.forEach(item => {
 			if (item.chieurap === true) {
 				processItem(item) // Xử lý item chiếu rạp
@@ -139,8 +132,8 @@ function displayUrls() {
 	const sourceSelect = document.getElementById('sourceSelect').value
 	const startPage = parseInt(document.getElementById('startPage').value)
 	const endPage = parseInt(document.getElementById('endPage').value)
-	const uniqueNamesCount = document.getElementById('uniqueNamesCount') // Tham chiếu đến phần tử đếm tên
-
+	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
+	uniqueNamesCount.textContent = 'Đang tải...'
 	// Hàm xử lý lấy dữ liệu từ tất cả các trang
 	function fetchAllPages(currentPage) {
 		if (currentPage > endPage) {
@@ -204,18 +197,32 @@ function updateTableWithMessage(tableId, items, message) {
 // Hàm kiểm tra và hiển thị/ẩn radio button dựa trên lựa chọn nguồn
 function toggleCrawlModeVisibility() {
 	const sourceSelect = document.getElementById('sourceSelect')
-	const crawlTheaterWrapper = document.getElementById('crawlModeWrapper') // Phần tử chứa checkbox
+	const crawlTheaterWrapper = document.getElementById('crawlModeWrapper')
+	const buttonLnk = document.getElementById('buttonIn_list')
 	const selectedSource = sourceSelect.value
 
 	// Hiển thị checkbox khi chọn KKPhim, ẩn khi chọn nguồn khác
 	if (selectedSource === 'kkphim') {
-		crawlTheaterWrapper.style.display = 'block' // Hiển thị radio khi chọn KKPhim
+		crawlTheaterWrapper.style.display = 'block'
+		buttonLnk.style.display = 'flex'
+		document.getElementById('apiUrl').value = 'https://phimapi.com/danh-sach/phim-moi-cap-nhat'
 	} else {
-		crawlTheaterWrapper.style.display = 'none' // Ẩn radio khi chọn nguồn khác
+		crawlTheaterWrapper.style.display = 'none'
+		buttonLnk.style.display = 'none'
+		document.getElementById('apiUrl').value = 'https://ophim1.com/danh-sach/phim-moi-cap-nhat'
+		// Ẩn radio khi chọn nguồn khác
 	}
 }
-
-// Lắng nghe sự kiện khi thay đổi giá trị của dropdown "sourceSelect"
+function getUrlbtn(element) {
+	const urlLink = 'https://phimapi.com/v1/api/danh-sach/'
+	const categoryUrls = {
+		getUrlHH: `${urlLink}hoat-hinh`,
+		getUrlsingle: `${urlLink}phim-le`,
+		getUrlseries: `${urlLink}phim-bo`
+	}
+	const category = element.id
+	categoryUrls[category] ? (document.getElementById('apiUrl').value = categoryUrls[category]) : NaN
+}
 document.getElementById('sourceSelect').addEventListener('change', toggleCrawlModeVisibility)
 
 // Kích hoạt sự kiện mặc định khi trang tải (lần đầu tiên)

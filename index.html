@@ -17,10 +17,17 @@
 				<option value="ophim">OPhim</option>
 			</select>
 
-			<input type="text" id="apiUrl" placeholder="Nhập link API..." size="50" value="https://phimapi.com/v1/api/danh-sach/phim-le" />
+			<input type="text" id="apiUrl" placeholder="Nhập link API..." size="50" value="" />
 			<input type="number" id="startPage" placeholder="Nhập số trang bắt đầu..." value="1" />
-			<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." />
+			<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." value="2" />
 			<textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
+			<div id="buttonIn_list" style="display: none">
+				<button id="getUrlNew" onclick="getUrlbtn(this)">Mới cập nhật</button>
+				<button id="getUrlHH" onclick="getUrlbtn(this)">Hoạt Hình</button>
+				<button id="getUrlsingle" onclick="getUrlbtn(this)">Phim lẻ</button>
+				<button id="getUrlseries" onclick="getUrlbtn(this)">Phim bộ</button>
+			</div>
+
 			<button id="getUrlsButton">Hiển Thị URL</button>
 
 			<!-- Radio button chỉ xuất hiện khi chọn KKPhim -->
