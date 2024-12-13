@@ -11,6 +11,7 @@ body {
 #uniqueNamesCount {
 	line-height: 1.8;
 	color: var(--button-color);
+	font-weight: 700;
 }
 .line-break {
 	color: #ff0000;

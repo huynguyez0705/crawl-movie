@@ -156,7 +156,7 @@ function displayUrls() {
 
 		if (currentPage > endPage) {
 			// Đã qua hết các trang, hiển thị kết quả
-			uniqueNamesCount.textContent = `Số lượng tên duy nhất: ${Object.keys(allLatestItems).length}`
+			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
 			showToast(`Hoàn thành ${currentPage} Page`)
 			return // Kết thúc khi đã xử lý tất cả các trang
 		}
