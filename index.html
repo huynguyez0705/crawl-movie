@@ -8,8 +8,12 @@
 	</head>
 	<body>
 		<h1>Kiểm Tra và Hiển Thị URL CỦA KK và OPhim</h1>
+		<div id="progressWrapper" style="display: none">
+			<div id="progressLabel">Đang tải...</div>
+			<progress id="loadingProgress" value="0" max="100"></progress>
+		</div>
 		<div id="uniqueNamesCount">Số lượng tên duy nhất: 0</div>
-
+		<div id="currentPageInfo">Đang crawl đến trang: <span id="currentPage"></span></div>
 		<div class="buttonIn">
 			<label for="sourceSelect">Chọn nguồn:</label>
 			<select id="sourceSelect">
@@ -22,7 +26,6 @@
 			<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." value="2" />
 			<textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
 			<div id="buttonIn_list" style="display: none">
-				<button id="getUrlNew" onclick="getUrlbtn(this)">Mới cập nhật</button>
 				<button id="getUrlHH" onclick="getUrlbtn(this)">Hoạt Hình</button>
 				<button id="getUrlsingle" onclick="getUrlbtn(this)">Phim lẻ</button>
 				<button id="getUrlseries" onclick="getUrlbtn(this)">Phim bộ</button>

@@ -269,3 +269,57 @@ input[type='checkbox']:checked::after {
 .show {
 	display: block;
 }
+#currentPageInfo {
+	font-size: 16px;
+	padding: 10px;
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	display: inline-block;
+}
+
+#currentPage {
+	font-weight: bold;
+	color: var(--button-color);
+	padding: 5px 10px;
+	background-color: #ffffff;
+	border-radius: 90%;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	display: inline-block;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#currentPageInfo #currentPage.jump {
+	transform: scale(1.2);
+	opacity: 0;
+}
+#progressWrapper {
+	width: 50%;
+	margin: 20px 0;
+}
+
+#progressLabel {
+	margin-bottom: 10px;
+	font-size: 16px;
+	color: #333;
+}
+
+progress {
+	width: 100%; /* Đặt chiều rộng bằng 100% để lấp đầy phần tử cha */
+	height: 20px;
+	appearance: none; /* Tắt giao diện mặc định */
+}
+
+progress::-webkit-progress-bar {
+	background-color: #0000ff; /* Nền của thanh tiến trình */
+	border-radius: 10px; /* Bo góc thanh tiến trình */
+}
+
+progress::-webkit-progress-value {
+	background-color: var(--button-color); /* Màu của thanh tiến trình */
+	border-radius: 10px; /* Bo góc thanh tiến trình */
+}
+
+progress::-moz-progress-bar {
+	background-color: var(--button-color); /* Màu của thanh tiến trình cho Firefox */
+	border-radius: 10px;
+}
