@@ -179,7 +179,7 @@ function showToast(message, type = 'success') {
 	setTimeout(() => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
-	}, 3000000)
+	}, 3000)
 }
 
 // Hàm sao chép trạng thái vào clipboard

@@ -52,7 +52,7 @@ function showToast(message, type = 'success') {
 	setTimeout(() => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
-	}, 10000)
+	}, 3000)
 }
 
 // Hàm trích xuất URL từ dữ liệu JSON và kiểm tra tên nhập vào
