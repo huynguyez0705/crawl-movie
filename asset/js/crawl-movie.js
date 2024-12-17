@@ -52,7 +52,7 @@ function showToast(message, type = 'success') {
 	setTimeout(() => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
-	}, 10000)
+	}, 3000)
 }
 
 // Hàm trích xuất URL từ dữ liệu JSON và kiểm tra tên nhập vào
@@ -112,7 +112,7 @@ function getUrls(jsonData, nameList, source) {
 		const year = item.year
 
 		// Cấu trúc URL theo nguồn
-		const url = source === 'kkphim' ? `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}|${name}|${origin_name}|${year}` : `https://ophim1.com/phim/${slug}|${id}|${modifiedTime}`
+		const url = source === 'kkphim' ? `https://phimapi.com/phim/${slug}|${id}|${modifiedTime}|${name}|${origin_name}|${year}` : `https://ophim1.com/phim/${slug}|${id}|${modifiedTime}|${name}|${origin_name}|${year}`
 
 		// Phân loại theo tên
 		if (namesToCheck.includes(item.name.toLowerCase())) {
@@ -136,17 +136,34 @@ function displayUrls() {
 	uniqueNamesCount.textContent = 'Đang tải...'
 	// Hàm xử lý lấy dữ liệu từ tất cả các trang
 	function fetchAllPages(currentPage) {
+		const totalPages = endPage - startPage + 1 // Tổng số trang cần tải
+		const progressElement = document.getElementById('loadingProgress')
+		const progressWrapper = document.getElementById('progressWrapper')
+
+		// Hiển thị thanh tiến trình khi bắt đầu tải
+		progressWrapper.style.display = 'block'
+
+		// Cập nhật thông tin trang hiện tại
+		const currentPageElement = document.getElementById('currentPage')
+		currentPageElement.classList.add('jump')
+		currentPageElement.textContent = currentPage
+		setTimeout(() => {
+			currentPageElement.classList.remove('jump')
+		}, 300)
+		// Tính toán tiến độ
+		const progressValue = ((currentPage - startPage) / totalPages) * 100
+		progressElement.value = progressValue
+
 		if (currentPage > endPage) {
 			// Đã qua hết các trang, hiển thị kết quả
-			uniqueNamesCount.textContent = `Số lượng tên duy nhất: ${Object.keys(allLatestItems).length}`
-			showToast('Hoàn thành')
+			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
+			showToast(`Hoàn thành ${currentPage} Page`)
 			return // Kết thúc khi đã xử lý tất cả các trang
 		}
 
 		fetchJsonData(apiUrl, currentPage)
 			.then(jsonData => {
-				const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList, sourceSelect, currentPage) // Truyền currentPage vào đây
-
+				const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList, sourceSelect, currentPage) //
 				allNonMatchingUrls = allNonMatchingUrls.concat(nonMatchingUrls)
 				allMatchingUrls = allMatchingUrls.concat(matchingUrls)
 				Object.assign(allLatestItems, latestItems)
@@ -205,7 +222,7 @@ function toggleCrawlModeVisibility() {
 	if (selectedSource === 'kkphim') {
 		crawlTheaterWrapper.style.display = 'block'
 		buttonLnk.style.display = 'flex'
-		document.getElementById('apiUrl').value = 'https://phimapi.com/danh-sach/phim-moi-cap-nhat'
+		document.getElementById('apiUrl').value = 'https://phimapi.com/v1/api/danh-sach/phim-le'
 	} else {
 		crawlTheaterWrapper.style.display = 'none'
 		buttonLnk.style.display = 'none'

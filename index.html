@@ -8,8 +8,12 @@
 	</head>
 	<body>
 		<h1>Kiểm Tra và Hiển Thị URL CỦA KK và OPhim</h1>
-		<div id="uniqueNamesCount">Số lượng tên duy nhất: 0</div>
 
+		<div id="uniqueNamesCount">Số lượng phim hiện tại: 0</div>
+		<div id="progressWrapper" style="display: none">
+			<progress id="loadingProgress" value="0" max="100"></progress>
+		</div>
+		<div id="currentPageInfo">Đang crawl đến trang: <span id="currentPage"></span></div>
 		<div class="buttonIn">
 			<label for="sourceSelect">Chọn nguồn:</label>
 			<select id="sourceSelect">
