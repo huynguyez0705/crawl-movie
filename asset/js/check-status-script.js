@@ -25,7 +25,7 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 			checkUrlStatus(url)
 				.then(result => {
 					// Lưu kết quả tại chỉ số gốc của URL
-					statusResults[index] = { url, status: result.status, fullUrl: result.fullUrl, type: result.type, chieurap: result.chieurap }
+					statusResults[index] = { name: result.name, url, status: result.status, fullUrl: result.fullUrl, type: result.type, chieurap: result.chieurap }
 
 					// Chỉ hiển thị bảng khi tất cả kết quả có mặt
 					if (statusResults.filter(Boolean).length === urlList.length) {
@@ -34,14 +34,14 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 				})
 				.catch(() => {
 					// Xử lý lỗi, đánh dấu trạng thái là "False"
-					statusResults[index] = { url, status: false, fullUrl: '', type: '', chieurap: false }
+					statusResults[index] = { name: '', url, status: false, fullUrl: '', type: '', chieurap: false }
 
 					if (statusResults.filter(Boolean).length === urlList.length) {
 						displayResults(statusResults)
 					}
 				})
 		} else {
-			statusResults[index] = { url: '', status: false, fullUrl: '', type: '', chieurap: false }
+			statusResults[index] = { name: '', url, url: '', status: false, fullUrl: '', type: '', chieurap: false }
 		}
 	})
 })
@@ -58,8 +58,12 @@ function displayResults(results) {
 	let countTrue = 0
 	let countFalse = 0
 
-	results.forEach(({ url, fullUrl, status, type, chieurap }) => {
+	results.forEach(({ name, url, fullUrl, status, type, chieurap }) => {
 		const row = document.createElement('tr')
+		//Taọ cột Name
+		const urlName = document.createElement('td')
+		urlName.textContent = name
+		row.appendChild(urlName)
 
 		// Tạo cột URL
 		const urlCell = document.createElement('td')
@@ -134,18 +138,19 @@ async function checkUrlStatus(url) {
 		if (data.status === true && data.movie) {
 			const type = data.movie.type || '' // Lấy type, nếu không có trả về chuỗi rỗng
 			const chieurap = data.movie.chieurap === true // Kiểm tra trạng thái chiếu rạp
+			const name = data.movie.name
 			// Tạo full URL
 			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}|${data.movie.name}|${data.movie.origin_name}|${data.movie.year}`
-			return { status: true, fullUrl: fullUrl, type: type, chieurap: chieurap }
+			return { name: name, status: true, fullUrl: fullUrl, type: type, chieurap: chieurap }
 		} else {
 			// Trả về dữ liệu mặc định khi không có thông tin hợp lệ
-			return { status: false, fullUrl: 'None', type: '', chieurap: false }
+			return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
 		}
 	} catch (error) {
 		// Xử lý khi có lỗi trong quá trình fetch dữ liệu
 		console.error('Lỗi khi lấy dữ liệu từ URL:', error)
 		showToast('Lỗi khi lấy dữ liệu từ URL: ' + error, 'error')
-		return { status: false, fullUrl: '', type: '', chieurap: false }
+		return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
 	}
 }
 function showToast(message, type = 'success') {
@@ -199,19 +204,22 @@ function copyColumn(columnIndex, successMessage) {
 		.join('\n')
 
 	copyToClipboard(text)
-	showToast(successMessage)
+	showToast(successMessage, info)
 }
 
 // Các sự kiện sao chép
-document.getElementById('copyFullUrlName').addEventListener('click', () => {
-	copyColumn(1, 'Đã sao chép URL vào clipboard!')
+document.getElementById('copyFullName').addEventListener('click', () => {
+	copyColumn(1, 'Đã sao chép Name!')
 })
-document.getElementById('copyFullUrlButton').addEventListener('click', () => {
-	copyColumn(2, 'Đã sao chép URL Hoàn Chỉnh vào clipboard!')
+document.getElementById('copyUrl').addEventListener('click', () => {
+	copyColumn(2, 'Đã sao chép URL')
 })
-document.getElementById('copyStatusButton').addEventListener('click', () => {
-	copyColumn(3, 'Đã sao chép trạng thái vào clipboard!')
+document.getElementById('coppyFullUrl').addEventListener('click', () => {
+	copyColumn(3, 'Đã sao chép fullUrl')
+})
+document.getElementById('copyStatus').addEventListener('click', () => {
+	copyColumn(4, 'Đã sao chép trạng thái')
 })
 document.getElementById('copyCategories').addEventListener('click', () => {
-	copyColumn(4, 'Đã sao chép Categories vào clipboard!')
+	copyColumn(5, 'Đã sao chép danh mục')
 })
