@@ -183,39 +183,6 @@ function showToast(message, type = 'success') {
 }
 
 // Hàm sao chép trạng thái vào clipboard
-document.getElementById('copyStatusButton').addEventListener('click', () => {
-	const statusCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(3)'))
-	const statusText = statusCells.map(cell => cell.textContent).join('\n')
-
-	// Sao chép vào clipboard
-	copyToClipboard(statusText)
-	showToast('Đã sao chép trạng thái vào clipboard!')
-})
-
-// Hàm sao chép full URL vào clipboard
-document.getElementById('copyFullUrlButton').addEventListener('click', () => {
-	const fullUrlCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(2)'))
-	const fullUrlText = fullUrlCells
-		.map(cell => cell.textContent)
-		.filter(text => text) // Lọc bỏ các ô trống
-		.join('\n')
-
-	// Sao chép vào clipboard
-	copyToClipboard(fullUrlText)
-	showToast('Đã sao chép URL Hoàn Chỉnh vào clipboard!')
-})
-document.getElementById('copyFullUrlName').addEventListener('click', () => {
-	const fullUrlCells = Array.from(document.querySelectorAll('#urlStatusTable td:nth-child(1)'))
-	const fullUrlText = fullUrlCells
-		.map(cell => cell.textContent)
-		.filter(text => text) // Lọc bỏ các ô trống
-		.join('\n')
-
-	// Sao chép vào clipboard
-	copyToClipboard(fullUrlText)
-	showToast('Đã sao chép URL Hoàn Chỉnh vào clipboard!')
-})
-
 // Hàm sao chép văn bản vào clipboard
 function copyToClipboard(text) {
 	navigator.clipboard.writeText(text).catch(err => {
@@ -223,3 +190,28 @@ function copyToClipboard(text) {
 		console.error('Lỗi khi sao chép:', err)
 	})
 }
+
+function copyColumn(columnIndex, successMessage) {
+	const cells = Array.from(document.querySelectorAll(`#urlStatusTable td:nth-child(${columnIndex})`))
+	const text = cells
+		.map(cell => cell.textContent)
+		.filter(text => text) // Lọc bỏ các ô trống
+		.join('\n')
+
+	copyToClipboard(text)
+	showToast(successMessage)
+}
+
+// Các sự kiện sao chép
+document.getElementById('copyFullUrlName').addEventListener('click', () => {
+	copyColumn(1, 'Đã sao chép URL vào clipboard!')
+})
+document.getElementById('copyFullUrlButton').addEventListener('click', () => {
+	copyColumn(2, 'Đã sao chép URL Hoàn Chỉnh vào clipboard!')
+})
+document.getElementById('copyStatusButton').addEventListener('click', () => {
+	copyColumn(3, 'Đã sao chép trạng thái vào clipboard!')
+})
+document.getElementById('copyCategories').addEventListener('click', () => {
+	copyColumn(4, 'Đã sao chép Categories vào clipboard!')
+})
