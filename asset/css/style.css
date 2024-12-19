@@ -1,7 +1,9 @@
 :root {
 	--button-color: #4caf50;
 }
-
+* {
+	box-sizing: border-box;
+}
 body {
 	font-family: Arial, sans-serif;
 	margin: 0;
@@ -17,13 +19,33 @@ body {
 	color: #ff0000;
 	display: block;
 }
+#crawlSummary {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
+#crawlSummary p {
+	width: 25%;
+}
+#crawlModeWrapper {
+	margin: 1em;
+	width: 100%;
+}
 
+#crawlModeWrapper label {
+	font-size: 16px;
+}
+.crawlOption {
+	width: 100%;
+	display: flex;
+
+	flex-direction: column;
+}
 .buttonIn {
-	width: 50%;
-	margin-bottom: 2em;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 100%;
 }
 #buttonIn_list {
 	gap: 10px;
@@ -39,6 +61,7 @@ body {
 #getUrlseries {
 	background: #ff4500;
 }
+
 .buttonIn input,
 .buttonIn textarea,
 .buttonIn select {
@@ -61,6 +84,10 @@ body {
 	justify-content: center;
 	gap: 10px;
 	margin-top: 1em;
+}
+.buttonIn label {
+	padding-bottom: 1em;
+	display: block;
 }
 
 .buttonIn button {
@@ -91,17 +118,33 @@ h1 {
 
 .container {
 	display: flex;
-	flex-direction: column;
 	gap: 20px;
+	flex-wrap: wrap;
+}
+.count-movie {
+	flex: 1;
 }
 
 @media (min-width: 768px) {
 	.container {
 		flex-direction: column;
 	}
+	.container__input {
+		flex-direction: row;
+	}
 }
-
-.table-container {
+@media (max-width: 768px) {
+	.container {
+	}
+	.container__input {
+		flex-direction: column;
+	}
+}
+.container__input {
+	display: flex;
+	gap: 10px;
+}
+.table-container__list {
 	width: 100%;
 	border: 1px solid #ccc;
 	border-radius: 5px;
@@ -110,7 +153,7 @@ h1 {
 }
 
 @media (min-width: 768px) {
-	.table-container {
+	.table-container__list {
 		width: 100%;
 	}
 }
@@ -242,13 +285,6 @@ td:nth-child(3) {
 }
 
 /* Styling cho radio button */
-#crawlModeWrapper {
-	margin: 1em;
-}
-
-#crawlModeWrapper label {
-	font-size: 16px;
-}
 
 input[type='checkbox'] {
 	appearance: none;
@@ -293,7 +329,11 @@ input[type='checkbox']:checked::after {
 	display: inline-block;
 }
 
-#currentPage {
+#currentPage,
+#totalItems,
+#itemsPerPage,
+#currentP,
+#totalPages {
 	font-weight: bold;
 	color: var(--button-color);
 	padding: 5px 10px;
