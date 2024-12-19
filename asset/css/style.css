@@ -11,7 +11,7 @@ body {
 	background-color: #f4f4f4;
 }
 #uniqueNamesCount {
-	line-height: 1.8;
+	line-height: 1.6;
 	color: var(--button-color);
 	font-weight: 700;
 }
@@ -141,10 +141,15 @@ h1 {
 		flex-direction: column;
 	}
 }
+.status .container__input {
+	width: 50%;
+}
+.index .container__input {
+	width: 100%;
+}
 .container__input {
 	display: flex;
 	gap: 10px;
-	width: 50%;
 }
 .table-container__list {
 	width: 100%;
@@ -336,15 +341,19 @@ input[type='checkbox']:checked::after {
 #totalItems,
 #itemsPerPage,
 #currentP,
-#totalPages {
+#totalPages,
+.countMovie {
 	font-weight: bold;
 	color: var(--button-color);
 	padding: 5px 10px;
 	background-color: #ffffff;
-	border-radius: 90%;
+	border-radius: 10px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	display: inline-block;
 	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.countMovie.false {
+	color: #ff0000;
 }
 
 #currentPageInfo #currentPage.jump {

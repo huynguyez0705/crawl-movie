@@ -25,7 +25,14 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 			checkUrlStatus(url)
 				.then(result => {
 					// Lưu kết quả tại chỉ số gốc của URL
-					statusResults[index] = { name: result.name, url, status: result.status, fullUrl: result.fullUrl, type: result.type, chieurap: result.chieurap }
+					statusResults[index] = {
+						name: result.name,
+						url,
+						status: result.status,
+						fullUrl: result.fullUrl,
+						type: result.type,
+						chieurap: result.chieurap
+					}
 
 					// Chỉ hiển thị bảng khi tất cả kết quả có mặt
 					if (statusResults.filter(Boolean).length === urlList.length) {
@@ -112,7 +119,8 @@ function displayResults(results) {
 	})
 
 	// Cập nhật thông tin số lượng tên duy nhất
-	uniqueNamesCount.innerHTML = `Có ${countTrue} phim crawl hoàn thành <span class="line-break">Có ${countFalse} phim không crawl được</span>`
+	uniqueNamesCount.innerHTML = `Phim crawl được  <span class="countMovie">${countTrue} </span>
+	<span class="line-break"> Phim không crawl được <span class="countMovie false">${countFalse} </span></span>`
 
 	// Hiển thị thông báo thành công nếu có phim crawl thành công
 	if (countTrue > 0) {
