@@ -61,6 +61,9 @@ body {
 #getUrlseries {
 	background: #ff4500;
 }
+#getUrltvshow {
+	background: #ff00ea;
+}
 
 .buttonIn input,
 .buttonIn textarea,

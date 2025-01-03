@@ -203,25 +203,26 @@ function toggleCrawlModeVisibility() {
 	const buttonLnk = document.getElementById('buttonIn_list')
 	const selectedSource = sourceSelect.value
 
-	if (selectedSource === 'kkphim') {
-		buttonLnk.style.display = 'flex'
-		document.getElementById('apiUrl').value = 'https://phimapi.com/v1/api/danh-sach/phim-le'
-	} else {
+	if (selectedSource === 'ophim') {
 		buttonLnk.style.display = 'flex'
 		document.getElementById('apiUrl').value = 'https://ophim1.com/v1/api/danh-sach/phim-le'
+	} else {
+		buttonLnk.style.display = 'flex'
+		document.getElementById('apiUrl').value = 'https://phimapi.com/v1/api/danh-sach/phim-le'
 	}
 }
 
 function getUrlbtn(element) {
 	const urlLink =
-		document.getElementById('sourceSelect').value === 'kkphim'
-			? 'https://phimapi.com/v1/api/danh-sach/'
-			: 'https://ophim1.com/v1/api/danh-sach/'
+		document.getElementById('sourceSelect').value === 'ophim'
+			? 'https://ophim1.com/v1/api/danh-sach/'
+			: 'https://phimapi.com/v1/api/danh-sach/'
 
 	const categoryUrls = {
 		getUrlHH: `${urlLink}hoat-hinh`,
 		getUrlsingle: `${urlLink}phim-le`,
-		getUrlseries: `${urlLink}phim-bo`
+		getUrlseries: `${urlLink}phim-bo`,
+		getUrltvshow: `${urlLink}tv-show`
 	}
 
 	const category = element.id
