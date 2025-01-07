@@ -222,7 +222,7 @@ function getUrlbtn(element) {
 		getUrlHH: `${urlLink}hoat-hinh`,
 		getUrlsingle: `${urlLink}phim-le`,
 		getUrlseries: `${urlLink}phim-bo`,
-		getUrltvshow: `${urlLink}tv-show`
+		getUrltvshow: `${urlLink}tv-shows`
 	}
 
 	const category = element.id
