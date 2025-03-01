@@ -143,22 +143,25 @@ async function checkUrlStatus(url) {
 		const data = await response.json()
 
 		// Kiểm tra nếu status là true và đảm bảo rằng các trường movie và thông tin cần thiết có mặt
-		if (data.status === true && data.movie) {
+		if (data.status === true || data.status === 'success') {
 			const type = data.movie.type || '' // Lấy type, nếu không có trả về chuỗi rỗng
-			const chieurap = data.movie.chieurap === true // Kiểm tra trạng thái chiếu rạp
+
 			const name = data.movie.name
+			const modifiedTime = data.movie.modified?.time ?? data.movie.modified ?? ''
+			const originName = data.movie?.origin_name ?? data.movie?.original_name ?? ''
+			const id = data.movie?._id ?? data.movie?.id ?? ''
 			// Tạo full URL
-			const fullUrl = `${url}|${data.movie._id}|${data.movie.modified.time}|${data.movie.name}|${data.movie.origin_name}|${data.movie.year}`
-			return { name: name, status: true, fullUrl: fullUrl, type: type, chieurap: chieurap }
+			const fullUrl = `${url}|${id}|${modifiedTime}|${data.movie.name}|${originName}|${data.movie.year}`
+			return { name: name, status: true, fullUrl: fullUrl, type: type }
 		} else {
 			// Trả về dữ liệu mặc định khi không có thông tin hợp lệ
-			return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
+			return { name: '', status: false, fullUrl: '', type: '' }
 		}
 	} catch (error) {
 		// Xử lý khi có lỗi trong quá trình fetch dữ liệu
 		console.error('Lỗi khi lấy dữ liệu từ URL:', error)
 		showToast('Lỗi khi lấy dữ liệu từ URL: ' + error, 'error')
-		return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
+		return { name: '', status: false, fullUrl: '', type: '' }
 	}
 }
 function showToast(message, type = 'success') {
