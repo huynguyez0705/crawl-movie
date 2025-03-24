@@ -136,18 +136,23 @@ function displayUrls() {
 		progressWrapper.style.display = 'block'
 
 		const currentPageElement = document.getElementById('currentPage')
+		const currentPElement = document.getElementById('currentP') // Lấy phần tử currentP
+
 		currentPageElement.classList.add('jump')
-		currentPageElement.textContent = endPage
+		currentPageElement.textContent = currentPage // Cập nhật trang hiện tại
+		currentPElement.textContent = currentPage // Cập nhật trang hiện tại cho currentP
+
 		setTimeout(() => {
 			currentPageElement.classList.remove('jump')
 		}, 300)
 
-		const progressValue = ((currentPage - startPage) / totalPages) * 100
+		const progressValue = ((endPage - currentPage) / totalPages) * 100 // Tính tiến trình ngược lại
 		progressElement.value = progressValue
 
-		if (currentPage > endPage) {
+		if (currentPage < startPage) {
+			// Kiểm tra nếu đã crawl hết các trang
 			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
-			showToast(`Hoàn thành ${currentPage} Page`)
+			showToast(`Hoàn thành ${currentPage + 1} Page`)
 			return
 		}
 
@@ -162,15 +167,14 @@ function displayUrls() {
 				updateTableWithMessage('nonMatchingTable', nonMatchingUrls, 'Không có phim không trùng khớp.')
 				updateTableWithMessage('matchingTable', matchingUrls, 'Không có phim trùng khớp.')
 
-				fetchAllPages(currentPage + 1)
+				fetchAllPages(currentPage - 1) // Gọi hàm với trang trước đó
 			})
 			.catch(error => {
 				console.error('Lỗi khi tải JSON:', error)
 				showToast('Không thể lấy dữ liệu từ API. Vui lòng kiểm tra URL.', 'error')
 			})
 	}
-
-	fetchAllPages(startPage)
+	fetchAllPages(endPage)
 }
 
 function updateTableWithMessage(tableId, items, message) {
