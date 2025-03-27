@@ -3,12 +3,12 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Kiểm Tra và Hiển Thị URL</title>
-		<link rel="stylesheet" href="./asset/css/style.css" />
-		<link rel="icon" type="image/x-icon" href="./asset/favicon_io/favicon.ico" />
+		<title>Kiểm Tra và Hiển Thị URL từ Rophim</title>
+		<link rel="stylesheet" href="../asset/css/style.css" />
+		<link rel="icon" type="image/x-icon" href="../asset/favicon_io/favicon.ico" />
 	</head>
 	<body>
-		<h1>Kiểm Tra và Hiển Thị URL CỦA KK và OPhim</h1>
+		<h1>Kiểm Tra và Hiển Thị URL từ Rophim</h1>
 
 		<div class="container index">
 			<div class="count-movie">
@@ -22,28 +22,21 @@
 			<div class="container__input">
 				<div class="buttonIn">
 					<div class="buttonIn__input">
-						<label for="sourceSelect">Chọn nguồn:</label>
-						<select id="sourceSelect">
-							<option value="ophim">OPhim</option>
-							<option value="kkphim">KKPhim</option>
-						</select>
-						<input type="text" id="apiUrl" placeholder="Nhập link API..." size="50" value="" />
+						<input
+							type="text"
+							id="apiUrl"
+							placeholder="Nhập link API..."
+							size="50"
+							value="https://api.rophim.me/v1/movie/filter" />
 						<input type="number" id="startPage" placeholder="Nhập số trang bắt đầu..." value="1" />
 						<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." value="2" />
 						<textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
 					</div>
-					<div id="buttonIn_list" style="display: none">
-						<button id="getUrlHH" onclick="getUrlbtn(this)">Hoạt Hình</button>
-						<button id="getUrlsingle" onclick="getUrlbtn(this)">Phim lẻ</button>
-						<button id="getUrlseries" onclick="getUrlbtn(this)">Phim bộ</button>
-						<button id="getUrltvshow" onclick="getUrlbtn(this)">TV Shows</button>
-					</div>
+
 					<button id="getUrlsButton">Hiển Thị URL</button>
-					<!-- Radio button chỉ xuất hiện khi chọn KKPhim -->
 					<div class="button-group-horizontal">
-						<a href="./page/releast-movie.html" style="color: #fff"><button>DS Mới Nhất</button></a>
-						<a href="./page/check-status.html" style="color: #fff"><button>Check Trạng Thái</button></a>
-						<a href="./page/rophim.html" style="color: #fff"><button>Crawl Rổ Phim</button></a>
+						<a href="../index.html" style="color: #fff"><button>Crawl Movie</button></a>
+						<a href="./check-status.html" style="color: #fff"><button>Check Trạng Thái</button></a>
 						<a onclick="location.reload()"><button>Làm Mới</button></a>
 					</div>
 				</div>
@@ -54,11 +47,6 @@
 						<p><strong>Trang hiện tại:</strong> <span id="currentP">0</span></p>
 						<p><strong>Tổng số trang:</strong> <span id="totalPages">0</span></p>
 					</div>
-					<div id="crawlModeWrapper" class="crawl-mode-options">
-						<div for="crawlMode">Chọn chế độ Crawl:</div>
-						<label for="crawlTheater">Chiếu rạp</label>
-						<input type="checkbox" name="crawlMode" value="theater" id="crawlTheater" />
-					</div>
 				</div>
 			</div>
 		</div>
@@ -67,14 +55,20 @@
 			<div class="table-container__list">
 				<h2>URL Không Bị Trùng</h2>
 				<div class="button-group">
-					<button id="copyNonMatchingNamesButton">Copy Toàn Bộ Name Không Bị Trùng</button>
-					<button id="copyNonMatchingButton">Copy Toàn Bộ URL Không Bị Trùng</button>
+					<button id="copyAllNonMatchingButton">Copy Toàn Bộ 5 Cột</button>
+					<button id="copyNonMatchingNamesButton">Copy Tên</button>
+					<button id="copyNonMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
+					<button id="copyNonMatchingSlugsButton">Copy Slug</button>
+					<button id="copyNonMatchingIdsButton">Copy ID</button>
 				</div>
-				<table>
+				<table class="table-rophim">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>URL</th>
+							<th>STT</th>
+							<th>Tên</th>
+							<th>Tên Tiếng Anh</th>
+							<th>Slug</th>
+							<th>ID</th>
 						</tr>
 					</thead>
 					<tbody id="nonMatchingTable"></tbody>
@@ -83,13 +77,20 @@
 			<div class="table-container__list">
 				<h2>Tên Trùng và URL Tương Ứng</h2>
 				<div class="button-group">
-					<button id="copyMatchingButton">Copy Toàn Bộ URL Bị Trùng</button>
+					<button id="copyAllMatchingButton">Copy Toàn Bộ 5 Cột</button>
+					<button id="copyMatchingNamesButton">Copy Tên</button>
+					<button id="copyMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
+					<button id="copyMatchingSlugsButton">Copy Slug</button>
+					<button id="copyMatchingIdsButton">Copy ID</button>
 				</div>
-				<table>
+				<table class="table-rophim">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>URL</th>
+							<th>STT</th>
+							<th>Tên</th>
+							<th>Tên Tiếng Anh</th>
+							<th>Slug</th>
+							<th>ID</th>
 						</tr>
 					</thead>
 					<tbody id="matchingTable"></tbody>
@@ -98,6 +99,6 @@
 		</div>
 		<div class="toast-container"></div>
 
-		<script src="./asset/js/index.js"></script>
+		<script src="../asset/js/rophim.js" defer></script>
 	</body>
 </html>
