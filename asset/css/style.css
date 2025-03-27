@@ -216,10 +216,7 @@ td:nth-child(3) {
 .table-crawl-status td:nth-child(5) {
 	width: 10%;
 }
-.button-group {
-	text-align: center;
-	margin-bottom: 10px;
-}
+
 .table-rophim th,
 .table-rophim td {
 	width: 25%;
@@ -254,6 +251,14 @@ td:nth-child(3) {
 	background-color: #f2f2f2; /* Màu nền cho tiêu đề */
 	z-index: 1; /* Đảm bảo tiêu đề nằm trên nội dung khi cuộn */
 }
+.button-group {
+	text-align: center;
+	margin-bottom: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+}
 
 .button-group button {
 	margin: 0 5px;
@@ -265,6 +270,17 @@ td:nth-child(3) {
 	cursor: pointer;
 	font-size: 16px;
 	transition: background-color 0.3s ease;
+}
+
+/* Đảm bảo nút "Copy Toàn Bộ 5 Cột" chiếm toàn bộ hàng trên */
+.button-group.rophim button:first-child {
+	flex: 0 0 100%; /* Chiếm toàn bộ chiều rộng */
+	text-align: center;
+}
+
+/* Các nút còn lại ở hàng dưới */
+.button-group.rophim button:not(:first-child) {
+	flex: 1 1 auto; /* Chia đều không gian cho các nút còn lại */
 }
 
 .button-group button:hover {
