@@ -92,7 +92,18 @@ body {
 	padding-bottom: 1em;
 	display: block;
 }
-
+.button-group-horizontal a {
+	color: #fff;
+}
+a[href*='rophim.html'] button {
+	background: #fecf59;
+	background: linear-gradient(39deg, #fecf59, #fff1cc);
+	color: #212529;
+}
+a[href*='rophim.html']:hover button {
+	background: #fecf59;
+	box-shadow: 0 5px 10px 10px rgba(255, 218, 125, 0.15);
+}
 .buttonIn button {
 	width: 100%;
 	background-color: var(--button-color);
@@ -112,6 +123,10 @@ body {
 .buttonIn a {
 	text-decoration: none;
 	width: 100%;
+}
+button:hover {
+	transform: scale(1.1);
+	transition: linear 0.2s;
 }
 
 h1 {
