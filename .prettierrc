@@ -32,7 +32,7 @@
 	"insertPragma": false,
 	"__comment 11__": "Không chèn pragma vào đầu file khi định dạng.",
 
-	"printWidth": 120,
+	"printWidth": 140,
 	"__comment 12__": "Số ký tự tối đa trên mỗi dòng khi định dạng mã.",
 
 	"requirePragma": false,

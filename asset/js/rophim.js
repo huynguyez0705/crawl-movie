@@ -4,14 +4,14 @@ let allMatchingUrls = []
 let allLatestItems = {}
 
 // Hàm lấy dữ liệu từ URL JSON với phân trang
-function fetchJsonData(apiUrl, page, sort, keyword, genres, countries) {
+function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, years) {
 	let url = apiUrl.trim()
 
 	const defaultParams = {
 		countries: countries || '',
 		genres: genres || '',
-		years: '',
-		type: '',
+		years: years || '',
+		type: type || '',
 		status: '',
 		exclude_status: 'Upcoming',
 		versions: '',
@@ -120,51 +120,21 @@ function getUrls(jsonData, nameList) {
 	return { nonMatchingUrls, matchingUrls, latestItems }
 }
 
-// Hàm điền dữ liệu vào dropdown
-function populateDropdown(selectId, data, displayField, valueField) {
-	const select = document.getElementById(selectId)
-	// Kiểm tra nếu data không phải mảng, thử lấy mảng từ thuộc tính result
-	const dataArray = Array.isArray(data) ? data : data.result || []
-
-	if (!Array.isArray(dataArray)) {
-		console.error(`Dữ liệu cho dropdown ${selectId} không phải mảng:`, data)
-		showToast(`Dữ liệu cho dropdown ${selectId} không hợp lệ`, 'error')
-		return
-	}
-
-	dataArray.forEach(item => {
-		const option = document.createElement('option')
-		option.value = item[valueField]
-		option.textContent = item[displayField]
-		select.appendChild(option)
-	})
-}
-
-// Hàm tải dữ liệu từ file JSON
-async function loadJsonData(filePath) {
-	try {
-		const response = await fetch(filePath)
-		if (!response.ok) {
-			throw new Error(`Không thể tải file ${filePath}`)
-		}
-		return await response.json()
-	} catch (error) {
-		console.error('Lỗi khi tải JSON:', error)
-		showToast(`Lỗi khi tải dữ liệu: ${error.message}`, 'error')
-		return []
-	}
-}
-
 // Hàm hiển thị kết quả
 function displayUrls() {
 	const apiUrl = document.getElementById('apiUrl').value
 	const nameList = document.getElementById('nameList').value
 	const startPage = parseInt(document.getElementById('startPage').value)
 	const endPage = parseInt(document.getElementById('endPage').value)
-	const sort = document.getElementById('sort').value
 	const keyword = document.getElementById('keyword').value
-	const genres = document.getElementById('genres').value
-	const countries = document.getElementById('countries').value
+
+	// Lấy giá trị từ các div active
+	const sort = document.querySelector('#sort-buttons .filter-btn.active').getAttribute('data-value')
+	const genres = document.querySelector('#genres-buttons .filter-btn.active').getAttribute('data-value')
+	const countries = document.querySelector('#countries-buttons .filter-btn.active').getAttribute('data-value')
+	const type = document.querySelector('#type-buttons .filter-btn.active').getAttribute('data-value')
+	const years = document.querySelector('#years-buttons .filter-btn.active').getAttribute('data-value')
+
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
 	uniqueNamesCount.textContent = 'Đang tải...'
 
@@ -201,7 +171,7 @@ function displayUrls() {
 			return
 		}
 
-		fetchJsonData(apiUrl, currentPage, sort, keyword, genres, countries)
+		fetchJsonData(apiUrl, currentPage, sort, keyword, genres, countries, type, years)
 			.then(jsonData => {
 				updateCrawlSummary(jsonData)
 				const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList)
@@ -330,14 +300,37 @@ function copyIds(isMatching) {
 }
 
 // Gắn sự kiện sau khi DOM tải xong
-document.addEventListener('DOMContentLoaded', async () => {
-	// Tải dữ liệu từ file JSON
-	const genresData = await loadJsonData('../asset/json/genre.json')
-	const countriesData = await loadJsonData('../asset/json/country.json')
+document.addEventListener('DOMContentLoaded', () => {
+	// Hàm xử lý click cho các div filter-btn
+	const filterGroups = document.querySelectorAll('.filter-buttons')
+	filterGroups.forEach(group => {
+		const buttons = group.querySelectorAll('.filter-btn')
+		buttons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				// Xóa class active khỏi tất cả các div trong cùng nhóm
+				buttons.forEach(b => b.classList.remove('active'))
+				// Thêm class active cho div được click
+				btn.classList.add('active')
+			})
+		})
+	})
+	// Lấy các phần tử cần thiết
+	// Toggle bộ lọc
+	const filterToggle = document.querySelector('.filter-toggle')
+	const filterRpGr = document.querySelector('.filter-rp-gr')
+	const closeFilterBtn = document.getElementById('close-filter')
 
-	// Điền dữ liệu vào dropdown
-	populateDropdown('genres', genresData, 'name', '_id')
-	populateDropdown('countries', countriesData, 'name', 'code')
+	if (filterToggle && filterRpGr) {
+		filterToggle.addEventListener('click', () => {
+			filterRpGr.classList.toggle('hidden')
+		})
+	}
+
+	if (closeFilterBtn && filterRpGr) {
+		closeFilterBtn.addEventListener('click', () => {
+			filterRpGr.classList.add('hidden')
+		})
+	}
 
 	const getUrlsButton = document.getElementById('getUrlsButton')
 	const copyAllNonMatchingButton = document.getElementById('copyAllNonMatchingButton')
@@ -352,18 +345,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 	const copyMatchingIdsButton = document.getElementById('copyMatchingIdsButton')
 
 	if (getUrlsButton) getUrlsButton.addEventListener('click', displayUrls)
-	if (copyAllNonMatchingButton)
-		copyAllNonMatchingButton.addEventListener('click', () => copyAllColumns('nonMatchingTable', false))
+	if (copyAllNonMatchingButton) copyAllNonMatchingButton.addEventListener('click', () => copyAllColumns('nonMatchingTable', false))
 	if (copyNonMatchingNamesButton) copyNonMatchingNamesButton.addEventListener('click', () => copyNames(false))
-	if (copyNonMatchingEnglishNamesButton)
-		copyNonMatchingEnglishNamesButton.addEventListener('click', () => copyEnglishNames(false))
+	if (copyNonMatchingEnglishNamesButton) copyNonMatchingEnglishNamesButton.addEventListener('click', () => copyEnglishNames(false))
 	if (copyNonMatchingSlugsButton) copyNonMatchingSlugsButton.addEventListener('click', () => copySlugs(false))
 	if (copyNonMatchingIdsButton) copyNonMatchingIdsButton.addEventListener('click', () => copyIds(false))
-	if (copyAllMatchingButton)
-		copyAllMatchingButton.addEventListener('click', () => copyAllColumns('matchingTable', true))
+	if (copyAllMatchingButton) copyAllMatchingButton.addEventListener('click', () => copyAllColumns('matchingTable', true))
 	if (copyMatchingNamesButton) copyMatchingNamesButton.addEventListener('click', () => copyNames(true))
-	if (copyMatchingEnglishNamesButton)
-		copyMatchingEnglishNamesButton.addEventListener('click', () => copyEnglishNames(true))
+	if (copyMatchingEnglishNamesButton) copyMatchingEnglishNamesButton.addEventListener('click', () => copyEnglishNames(true))
 	if (copyMatchingSlugsButton) copyMatchingSlugsButton.addEventListener('click', () => copySlugs(true))
 	if (copyMatchingIdsButton) copyMatchingIdsButton.addEventListener('click', () => copyIds(true))
 })
