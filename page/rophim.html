@@ -1,104 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Kiểm Tra và Hiển Thị URL từ Rophim</title>
-		<link rel="stylesheet" href="../asset/css/style.css" />
-		<link rel="icon" type="image/x-icon" href="../asset/favicon_io/favicon.ico" />
-	</head>
-	<body>
-		<h1>Kiểm Tra và Hiển Thị URL từ Rophim</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Kiểm Tra và Hiển Thị URL từ Rophim</title>
+        <link rel="stylesheet" href="../asset/css/style.css" />
+        <link rel="icon" type="image/x-icon" href="../asset/favicon_io/favicon.ico" />
+    </head>
+    <body>
+        <h1>Kiểm Tra và Hiển Thị URL từ Rophim</h1>
 
-		<div class="container index">
-			<div class="count-movie">
-				<div id="uniqueNamesCount">Số lượng phim hiện tại: 0</div>
-				<div id="progressWrapper" style="display: none">
-					<progress id="loadingProgress" value="0" max="100"></progress>
-				</div>
-				<div id="currentPageInfo">Đang crawl đến trang: <span id="currentPage"></span></div>
-			</div>
+        <div class="container index">
+            <div class="count-movie">
+                <div id="uniqueNamesCount">Số lượng phim hiện tại: 0</div>
+                <div id="progressWrapper" style="display: none">
+                    <progress id="loadingProgress" value="0" max="100"></progress>
+                </div>
+                <div id="currentPageInfo">Đang crawl đến trang: <span id="currentPage"></span></div>
+            </div>
 
-			<div class="container__input">
-				<div class="buttonIn">
-					<div class="buttonIn__input">
-						<input
-							type="text"
-							id="apiUrl"
-							placeholder="Nhập link API..."
-							size="50"
-							value="https://api.rophim.me/v1/movie/filter" />
-						<input type="number" id="startPage" placeholder="Nhập số trang bắt đầu..." value="1" />
-						<input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." value="2" />
-						<textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
-					</div>
+            <div class="container__input">
+                <div class="buttonIn">
+                    <div class="buttonIn__input">
+                        <input
+                            type="text"
+                            id="apiUrl"
+                            placeholder="Nhập link API..."
+                            size="50"
+                            value="https://api.rophim.me/v1/movie/filterV2"
+                        />
+                        <input type="number" id="startPage" placeholder="Nhập số trang bắt đầu..." value="1" />
+                        <input type="number" id="endPage" placeholder="Nhập số trang kết thúc..." value="2" />
+                        <input type="text" id="sort" placeholder="Sắp xếp (release_date, popularity...)" value="release_date" />
+                        <input type="text" id="keyword" placeholder="Từ khóa tìm kiếm..." value="" />
+                        <!-- Dropdown cho genres -->
+                        <select id="genres">
+                            <option value="">Chọn thể loại...</option>
+                        </select>
+                        <!-- Dropdown cho countries -->
+                        <select id="countries">
+                            <option value="">Chọn quốc gia...</option>
+                        </select>
+                        <textarea id="nameList" placeholder="Nhập danh sách tên, mỗi tên trên một dòng..."></textarea>
+                    </div>
 
-					<button id="getUrlsButton">Hiển Thị URL</button>
-					<div class="button-group-horizontal">
-						<a href="../index.html" ><button>Crawl Movie</button></a>
-						<a href="./check-status.html" ><button>Check Trạng Thái</button></a>
-						<a onclick="location.reload()"><button>Làm Mới</button></a>
-					</div>
-				</div>
-				<div class="crawlOption">
-					<div id="crawlSummary">
-						<p><strong>Tổng số phim:</strong> <span id="totalItems">0</span></p>
-						<p><strong>Số phim trên mỗi trang:</strong> <span id="itemsPerPage">0</span></p>
-						<p><strong>Trang hiện tại:</strong> <span id="currentP">0</span></p>
-						<p><strong>Tổng số trang:</strong> <span id="totalPages">0</span></p>
-					</div>
-				</div>
-			</div>
-		</div>
+                    <button id="getUrlsButton">Hiển Thị URL</button>
+                    <div class="button-group-horizontal">
+                        <a href="../index.html"><button>Crawl Movie</button></a>
+                        <a href="./check-status.html"><button>Check Trạng Thái</button></a>
+                        <a onclick="location.reload()"><button>Làm Mới</button></a>
+                    </div>
+                </div>
+                <div class="crawlOption">
+                    <div id="crawlSummary">
+                        <p><strong>Tổng số phim:</strong> <span id="totalItems">0</span></p>
+                        <p><strong>Số phim trên mỗi trang:</strong> <span id="itemsPerPage">0</span></p>
+                        <p><strong>Trang hiện tại:</strong> <span id="currentP">0</span></p>
+                        <p><strong>Tổng số trang:</strong> <span id="totalPages">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<div class="table-container">
-			<div class="table-container__list">
-				<h2>URL Không Bị Trùng</h2>
-				<div class="button-group">
-					<button id="copyAllNonMatchingButton">Copy Toàn Bộ 5 Cột</button>
-					<button id="copyNonMatchingNamesButton">Copy Tên</button>
-					<button id="copyNonMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
-					<button id="copyNonMatchingSlugsButton">Copy Slug</button>
-					<button id="copyNonMatchingIdsButton">Copy ID</button>
-				</div>
-				<table class="table-rophim">
-					<thead>
-						<tr>
-							<th>STT</th>
-							<th>Tên</th>
-							<th>Tên Tiếng Anh</th>
-							<th>Slug</th>
-							<th>ID</th>
-						</tr>
-					</thead>
-					<tbody id="nonMatchingTable"></tbody>
-				</table>
-			</div>
-			<div class="table-container__list">
-				<h2>Tên Trùng và URL Tương Ứng</h2>
-				<div class="button-group rophim">
-					<button id="copyAllMatchingButton">Copy Toàn Bộ 5 Cột</button>
-					<button id="copyMatchingNamesButton">Copy Tên</button>
-					<button id="copyMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
-					<button id="copyMatchingSlugsButton">Copy Slug</button>
-					<button id="copyMatchingIdsButton">Copy ID</button>
-				</div>
-				<table class="table-rophim">
-					<thead>
-						<tr>
-							<th>STT</th>
-							<th>Tên</th>
-							<th>Tên Tiếng Anh</th>
-							<th>Slug</th>
-							<th>ID</th>
-						</tr>
-					</thead>
-					<tbody id="matchingTable"></tbody>
-				</table>
-			</div>
-		</div>
-		<div class="toast-container"></div>
+        <div class="table-container">
+            <div class="table-container__list">
+                <h2>URL Không Bị Trùng</h2>
+                <div class="button-group rophim">
+                    <button id="copyAllNonMatchingButton">Copy Toàn Bộ 5 Cột</button>
+                    <button id="copyNonMatchingNamesButton">Copy Tên</button>
+                    <button id="copyNonMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
+                    <button id="copyNonMatchingSlugsButton">Copy Slug</button>
+                    <button id="copyNonMatchingIdsButton">Copy ID</button>
+                </div>
+                <table class="table-rophim">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Tên Tiếng Anh</th>
+                            <th>Slug</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nonMatchingTable"></tbody>
+                </table>
+            </div>
+            <div class="table-container__list">
+                <h2>Tên Trùng và URL Tương Ứng</h2>
+                <div class="button-group rophim">
+                    <button id="copyAllMatchingButton">Copy Toàn Bộ 5 Cột</button>
+                    <button id="copyMatchingNamesButton">Copy Tên</button>
+                    <button id="copyMatchingEnglishNamesButton">Copy Tên Tiếng Anh</button>
+                    <button id="copyMatchingSlugsButton">Copy Slug</button>
+                    <button id="copyMatchingIdsButton">Copy ID</button>
+                </div>
+                <table class="table-rophim">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Tên Tiếng Anh</th>
+                            <th>Slug</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchingTable"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="toast-container"></div>
 
-		<script src="../asset/js/rophim.js" defer></script>
-	</body>
+        <script src="../asset/js/rophim.js" defer></script>
+    </body>
 </html>

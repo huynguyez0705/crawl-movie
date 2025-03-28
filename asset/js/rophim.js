@@ -4,14 +4,36 @@ let allMatchingUrls = []
 let allLatestItems = {}
 
 // Hàm lấy dữ liệu từ URL JSON với phân trang
-function fetchJsonData(apiUrl, page) {
+function fetchJsonData(apiUrl, page, sort, keyword, genres, countries) {
 	let url = apiUrl.trim()
 
-	if (!url.includes('?page=')) {
-		url += `?page=${page}`
-	} else {
-		url = url.replace(/([?&])page=\d+/, `$1page=${page}`)
+	const defaultParams = {
+		countries: countries || '',
+		genres: genres || '',
+		years: '',
+		type: '',
+		status: '',
+		exclude_status: 'Upcoming',
+		versions: '',
+		rating: '',
+		networks: '',
+		productions: '',
+		sort: sort || 'release_date',
+		page: page,
+		keyword: keyword || ''
 	}
+
+	const urlObj = new URL(url)
+	const existingParams = new URLSearchParams(urlObj.search)
+
+	Object.entries(defaultParams).forEach(([key, value]) => {
+		if (!existingParams.has(key)) {
+			existingParams.set(key, value)
+		}
+	})
+
+	urlObj.search = existingParams.toString()
+	url = urlObj.toString()
 
 	return fetch(url).then(response => {
 		if (!response.ok) {
@@ -98,16 +120,54 @@ function getUrls(jsonData, nameList) {
 	return { nonMatchingUrls, matchingUrls, latestItems }
 }
 
+// Hàm điền dữ liệu vào dropdown
+function populateDropdown(selectId, data, displayField, valueField) {
+	const select = document.getElementById(selectId)
+	// Kiểm tra nếu data không phải mảng, thử lấy mảng từ thuộc tính result
+	const dataArray = Array.isArray(data) ? data : data.result || []
+
+	if (!Array.isArray(dataArray)) {
+		console.error(`Dữ liệu cho dropdown ${selectId} không phải mảng:`, data)
+		showToast(`Dữ liệu cho dropdown ${selectId} không hợp lệ`, 'error')
+		return
+	}
+
+	dataArray.forEach(item => {
+		const option = document.createElement('option')
+		option.value = item[valueField]
+		option.textContent = item[displayField]
+		select.appendChild(option)
+	})
+}
+
+// Hàm tải dữ liệu từ file JSON
+async function loadJsonData(filePath) {
+	try {
+		const response = await fetch(filePath)
+		if (!response.ok) {
+			throw new Error(`Không thể tải file ${filePath}`)
+		}
+		return await response.json()
+	} catch (error) {
+		console.error('Lỗi khi tải JSON:', error)
+		showToast(`Lỗi khi tải dữ liệu: ${error.message}`, 'error')
+		return []
+	}
+}
+
 // Hàm hiển thị kết quả
 function displayUrls() {
 	const apiUrl = document.getElementById('apiUrl').value
 	const nameList = document.getElementById('nameList').value
 	const startPage = parseInt(document.getElementById('startPage').value)
 	const endPage = parseInt(document.getElementById('endPage').value)
+	const sort = document.getElementById('sort').value
+	const keyword = document.getElementById('keyword').value
+	const genres = document.getElementById('genres').value
+	const countries = document.getElementById('countries').value
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
 	uniqueNamesCount.textContent = 'Đang tải...'
 
-	// Xóa dữ liệu cũ trước khi bắt đầu crawl
 	allNonMatchingUrls = []
 	allMatchingUrls = []
 	allLatestItems = {}
@@ -136,13 +196,12 @@ function displayUrls() {
 		if (currentPage < startPage) {
 			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
 			showToast(`Hoàn thành ${currentPage + 1} Page`)
-			// Hiển thị toàn bộ dữ liệu sau khi crawl xong
 			updateTableWithMessage('nonMatchingTable', allNonMatchingUrls, 'Không có phim không trùng khớp.')
 			updateTableWithMessage('matchingTable', allMatchingUrls, 'Không có phim trùng khớp.')
 			return
 		}
 
-		fetchJsonData(apiUrl, currentPage)
+		fetchJsonData(apiUrl, currentPage, sort, keyword, genres, countries)
 			.then(jsonData => {
 				updateCrawlSummary(jsonData)
 				const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList)
@@ -150,7 +209,6 @@ function displayUrls() {
 				allMatchingUrls = allMatchingUrls.concat(matchingUrls)
 				Object.assign(allLatestItems, latestItems)
 
-				// Hiển thị dữ liệu tích lũy sau mỗi trang
 				updateTableWithMessage('nonMatchingTable', allNonMatchingUrls, 'Không có phim không trùng khớp.')
 				updateTableWithMessage('matchingTable', allMatchingUrls, 'Không có phim trùng khớp.')
 
@@ -272,7 +330,15 @@ function copyIds(isMatching) {
 }
 
 // Gắn sự kiện sau khi DOM tải xong
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+	// Tải dữ liệu từ file JSON
+	const genresData = await loadJsonData('../asset/json/genre.json')
+	const countriesData = await loadJsonData('../asset/json/country.json')
+
+	// Điền dữ liệu vào dropdown
+	populateDropdown('genres', genresData, 'name', '_id')
+	populateDropdown('countries', countriesData, 'name', 'code')
+
 	const getUrlsButton = document.getElementById('getUrlsButton')
 	const copyAllNonMatchingButton = document.getElementById('copyAllNonMatchingButton')
 	const copyNonMatchingNamesButton = document.getElementById('copyNonMatchingNamesButton')
