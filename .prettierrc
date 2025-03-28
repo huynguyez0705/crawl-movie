@@ -1,52 +1,52 @@
 {
-	"arrowParens": "avoid",
-	"__comment 1__": "Tránh sử dụng dấu ngoặc nhọn ('()') khi không cần thiết.",
+  "arrowParens": "avoid",
+  "__comment 1__": "Tránh sử dụng dấu ngoặc nhọn ('()') khi không cần thiết.",
 
-	"bracketSameLine": true,
-	"__comment 2__": "Đặt dấu ngoặc vuông trên cùng dòng của đối tượng và mảng.",
+  "bracketSameLine": true,
+  "__comment 2__": "Đặt dấu ngoặc vuông trên cùng dòng của đối tượng và mảng.",
 
-	"semi": false,
-	"__comment 3__": "Không sử dụng dấu chấm phẩy ';' ở cuối mỗi câu lệnh.",
+  "semi": false,
+  "__comment 3__": "Không sử dụng dấu chấm phẩy ';' ở cuối mỗi câu lệnh.",
 
-	"experimentalTernaries": false,
-	"__comment 4__": "Không sử dụng ba ngôi kinh nghiệm.",
+  "experimentalTernaries": false,
+  "__comment 4__": "Không sử dụng ba ngôi kinh nghiệm.",
 
-	"singleQuote": true,
-	"__comment 5__": "Sử dụng dấu ngoặc đơn (' ') thay vì dấu ngoặc kép (\").",
+  "singleQuote": true,
+  "__comment 5__": "Sử dụng dấu ngoặc đơn (' ') thay vì dấu ngoặc kép (\").",
 
-	"quoteProps": "as-needed",
-	"__comment 6__": "Tránh sử dụng dấu ngoặc đơn (' ') khi không cần thiết.",
+  "quoteProps": "as-needed",
+  "__comment 6__": "Tránh sử dụng dấu ngoặc đơn (' ') khi không cần thiết.",
 
-	"trailingComma": "none",
-	"__comment 7__": "Hiển thị một dòng dấu ngoặc đóng '>)' ở cuối mỗi dòng.",
+  "trailingComma": "none",
+  "__comment 7__": "Hiển thị một dòng dấu ngoặc đóng '>)' ở cuối mỗi dòng.",
 
-	"singleAttributePerLine": false,
-	"__comment 8__": "Không xuống dòng mỗi thuộc tính của đối tượng.",
+  "singleAttributePerLine": false,
+  "__comment 8__": "Không xuống dòng mỗi thuộc tính của đối tượng.",
 
-	"htmlWhitespaceSensitivity": "css",
-	"__comment 9__": "Định dạng khoảng trắng HTML theo quy tắc CSS.",
+  "htmlWhitespaceSensitivity": "css",
+  "__comment 9__": "Định dạng khoảng trắng HTML theo quy tắc CSS.",
 
-	"proseWrap": "preserve",
-	"__comment 10__": "Bảo toàn định dạng văn bản (không tự động xuống dòng).",
+  "proseWrap": "preserve",
+  "__comment 10__": "Bảo toàn định dạng văn bản (không tự động xuống dòng).",
 
-	"insertPragma": false,
-	"__comment 11__": "Không chèn pragma vào đầu file khi định dạng.",
+  "insertPragma": false,
+  "__comment 11__": "Không chèn pragma vào đầu file khi định dạng.",
 
-	"printWidth": 140,
-	"__comment 12__": "Số ký tự tối đa trên mỗi dòng khi định dạng mã.",
+  "printWidth": 140,
+  "__comment 12__": "Số ký tự tối đa trên mỗi dòng khi định dạng mã.",
 
-	"requirePragma": false,
-	"__comment 13__": "Không yêu cầu pragma khi định dạng.",
+  "requirePragma": false,
+  "__comment 13__": "Không yêu cầu pragma khi định dạng.",
 
-	"tabWidth": 2,
-	"__comment 14__": "Số lượng ký tự cho mỗi tab.",
+  "tabWidth": 2,
+  "__comment 14__": "Số lượng ký tự cho mỗi tab.",
 
-	"useTabs": true,
-	"__comment 15__": "Sử dụng tab thay vì dấu cách để thụt lề.",
+  "useTabs": true,
+  "__comment 15__": "Sử dụng tab thay vì dấu cách để thụt lề.",
 
-	"embeddedLanguageFormatting": "auto",
-	"__comment 16__": "Tự động định dạng ngôn ngữ nhúng (ví dụ: HTML trong JavaScript).",
+  "embeddedLanguageFormatting": "auto",
+  "__comment 16__": "Tự động định dạng ngôn ngữ nhúng (ví dụ: HTML trong JavaScript).",
 
-	"cursorOffset": -1,
-	"__comment 17__": "Vị trí con trỏ khi định dạng (đặt là -1 để giữ nguyên vị trí)."
+  "cursorOffset": -1,
+  "__comment 17__": "Vị trí con trỏ khi định dạng (đặt là -1 để giữ nguyên vị trí)."
 }
