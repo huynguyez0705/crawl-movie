@@ -5,7 +5,7 @@ let allLatestItems = {}
 
 // Hàm lấy dữ liệu từ URL JSON với phân trang
 function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, years) {
-	let baseUrl = 'ripple-lyrical-crocodile.glitch.me/proxy'
+	let baseUrl = 'https://ripple-lyrical-crocodile.glitch.me/proxy'
 	const defaultParams = {
 		countries: countries || '',
 		genres: genres || '',
