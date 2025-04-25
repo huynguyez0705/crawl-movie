@@ -34,7 +34,7 @@ function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, yea
 	urlObj.search = existingParams.toString()
 	let url = urlObj.toString()
 
-	console.log('Đang lấy dữ liệu từ URL:', url) // Chuyển sang tiếng Việt
+	console.log('Đang lấy dữ liệu từ URL:', url)
 
 	return fetch(url)
 		.then(response => {
@@ -44,7 +44,7 @@ function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, yea
 			return response.json()
 		})
 		.catch(error => {
-			console.error('Lỗi khi lấy dữ liệu:', error) // Chuyển sang tiếng Việt
+			console.error('Lỗi khi lấy dữ liệu:', error)
 			showToast(`Lỗi khi tải dữ liệu: ${error.message}`, 'error')
 			throw error
 		})
@@ -91,7 +91,7 @@ function getUrls(jsonData, nameList) {
 	let items = jsonData.result.items || []
 
 	if (!Array.isArray(items)) {
-		console.error('Dữ liệu items không hợp lệ:', items) // Chuyển sang tiếng Việt
+		console.error('Dữ liệu items không hợp lệ:', items)
 		showToast('Dữ liệu items không hợp lệ:', 'error')
 		return { nonMatchingUrls: [], matchingUrls: [], latestItems: {} }
 	}
@@ -152,8 +152,8 @@ function displayUrls() {
 	const type = typeButton ? typeButton.getAttribute('data-value') : ''
 	const years = getActiveFilterValues('years-buttons')
 
-	console.log('Giá trị sắp xếp:', sort) // Chuyển sang tiếng Việt
-	console.log('Giá trị loại phim:', type) // Chuyển sang tiếng Việt
+	console.log('Giá trị sắp xếp:', sort)
+	console.log('Giá trị loại phim:', type)
 
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
 	uniqueNamesCount.textContent = 'Đang tải...'
@@ -205,7 +205,7 @@ function displayUrls() {
 				fetchAllPages(currentPage - 1)
 			})
 			.catch(error => {
-				console.error('Lỗi khi tải JSON:', error) // Chuyển sang tiếng Việt
+				console.error('Lỗi khi tải JSON:', error)
 				showToast('Không thể lấy dữ liệu từ API. Vui lòng kiểm tra URL.', 'error')
 			})
 	}
@@ -216,7 +216,7 @@ function displayUrls() {
 function updateTableWithMessage(tableId, items, message) {
 	const tableBody = document.getElementById(tableId)
 	if (!tableBody) {
-		console.error(`Không tìm thấy phần tử với ID: ${tableId}`) // Chuyển sang tiếng Việt
+		console.error(`Không tìm thấy phần tử với ID: ${tableId}`)
 		showToast(`Không tìm thấy bảng với ID: ${tableId}`, 'error')
 		return
 	}
@@ -275,7 +275,7 @@ function copyToClipboard(text) {
 		})
 		.catch(err => {
 			showToast('Lỗi khi sao chép: ' + err, 'error')
-			console.error('Lỗi khi sao chép:', err) // Chuyển sang tiếng Việt
+			console.error('Lỗi khi sao chép:', err)
 		})
 }
 
@@ -316,34 +316,38 @@ function copySlugs(isMatching) {
 function copyIds(isMatching) {
 	const items = isMatching ? allMatchingUrls : allNonMatchingUrls
 	const ids = items.map(item => item.id).join('\n')
-	copyToClipboard(ids)
+	copyToClipboard(slugs)
 }
 
 // Gắn sự kiện sau khi DOM tải xong
 document.addEventListener('DOMContentLoaded', () => {
 	// Xử lý multi-select cho Quốc gia, Thể loại, Năm phát hành
-	const multiSelectGroups = ['countries-buttons', 'genres-buttons', 'years-buttons']
-	multiSelectGroups.forEach(groupId => {
-		const group = document.getElementById(groupId)
-		if (group) {
-			const buttons = group.querySelectorAll('.filter-btn')
+	const multiSelectGroups = [
+		{ id: 'countries-buttons', label: 'Đã chọn quốc gia' },
+		{ id: 'genres-buttons', label: 'Đã chọn thể loại' },
+		{ id: 'years-buttons', label: 'Đã chọn năm phát hành' }
+	]
+	multiSelectGroups.forEach(group => {
+		const groupElement = document.getElementById(group.id)
+		if (groupElement) {
+			const buttons = groupElement.querySelectorAll('.filter-btn')
 			buttons.forEach(btn => {
 				btn.addEventListener('click', () => {
-					console.log(`Đã click nút ${groupId}:`, btn.getAttribute('data-value')) // Chuyển sang tiếng Việt
+					console.log(`${group.label}: ${btn.textContent}`)
 					const isAllButton = btn.getAttribute('data-value') === ''
-					const allButton = group.querySelector('.filter-btn[data-value=""]')
+					const allButton = groupElement.querySelector('.filter-btn[data-value=""]')
 
 					if (isAllButton) {
-						// Nếu click vào "Tất cả", bỏ chọn tất cả các nút khác
+						// Nếu chọn "Tất cả", bỏ chọn tất cả các nút khác
 						buttons.forEach(b => b.classList.remove('active'))
 						btn.classList.add('active')
 					} else {
-						// Nếu click vào nút khác, bỏ chọn "Tất cả" và toggle trạng thái nút hiện tại
+						// Nếu chọn nút khác, bỏ chọn "Tất cả" và toggle trạng thái nút hiện tại
 						allButton.classList.remove('active')
 						btn.classList.toggle('active')
 
 						// Nếu không còn nút nào được chọn, chọn lại "Tất cả"
-						const activeButtons = group.querySelectorAll('.filter-btn.active')
+						const activeButtons = groupElement.querySelectorAll('.filter-btn.active')
 						if (activeButtons.length === 0) {
 							allButton.classList.add('active')
 						}
@@ -354,14 +358,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	// Xử lý single-select cho Loại phim và Sắp xếp
-	const singleSelectGroups = ['type-buttons', 'sort-buttons']
-	singleSelectGroups.forEach(groupId => {
-		const group = document.getElementById(groupId)
-		if (group) {
-			const buttons = group.querySelectorAll('.filter-btn')
+	const singleSelectGroups = [
+		{ id: 'type-buttons', label: 'Đã chọn loại phim' },
+		{ id: 'sort-buttons', label: 'Đã chọn sắp xếp' }
+	]
+	singleSelectGroups.forEach(group => {
+		const groupElement = document.getElementById(group.id)
+		if (groupElement) {
+			const buttons = groupElement.querySelectorAll('.filter-btn')
 			buttons.forEach(btn => {
 				btn.addEventListener('click', () => {
-					console.log(`Đã click nút ${groupId}:`, btn.getAttribute('data-value')) // Chuyển sang tiếng Việt
+					console.log(`${group.label}: ${btn.textContent}`)
 					// Xóa class active khỏi tất cả các nút trong cùng nhóm
 					buttons.forEach(b => b.classList.remove('active'))
 					// Thêm class active cho nút được click
