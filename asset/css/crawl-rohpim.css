@@ -107,7 +107,7 @@
 	gap: 10px;
 	flex-direction: column-reverse;
 	row-gap: 1em;
-	width: 75%;
+	/* width: 100%; */
 }
 
 .crawl-rophim .buttonIn {
@@ -180,30 +180,37 @@
 .crawl-rophim .filter-group {
 	display: flex;
 	align-items: flex-start;
+	justify-content: space-between;
 	gap: 2rem;
-	padding: 1rem;
-	border-bottom: 1px solid var(--border-color);
+	padding: 0.5rem 1rem;
+	border-bottom: 1px dashed var(--border-color);
 }
 
 .crawl-rophim .filter-group .filter-name {
+	padding: 0.3rem 0;
+	text-align: right;
 	flex-shrink: 0;
 	font-weight: 500;
 	color: #fff;
+	width: 10%;
 }
 
 .crawl-rophim .button-group.filter-buttons {
+	flex-grow: 1;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
-	justify-content: space-between;
+	justify-content: flex-start;
+	gap: 0.5rem;
 }
 
 .crawl-rophim .filter-btn {
-	padding: 0 0.5rem;
 	color: var(--text-white);
 	cursor: pointer;
 	opacity: 0.8;
 	font-size: 14px;
+	border: 1px solid transparent;
+	padding: 0.3rem 0.6rem;
+	border-radius: 0.4rem;
 }
 .crawl-rophim .filter-btn:hover {
 	opacity: 1;
@@ -211,7 +218,7 @@
 }
 
 .crawl-rophim .filter-btn.active {
-	border-color: var(--primary-color);
+	border-color: #fff3;
 	color: var(--primary-text);
 	opacity: 1 !important;
 }
