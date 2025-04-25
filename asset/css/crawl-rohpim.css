@@ -107,9 +107,11 @@
 	gap: 10px;
 	flex-direction: column-reverse;
 	row-gap: 1em;
-	/* width: 100%; */
+	width: 75%;
 }
-
+.crawl-rophim .container__input.table-container {
+	flex-direction: column;
+}
 .crawl-rophim .buttonIn {
 	display: flex;
 	flex-direction: column;
@@ -119,7 +121,7 @@
 
 .buttonIn__input,
 .filter-rophim {
-	width: 75%;
+	width: 100%;
 	margin-top: 1em;
 }
 
