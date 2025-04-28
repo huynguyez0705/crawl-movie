@@ -215,7 +215,7 @@ function copyColumn(columnIndex, successMessage) {
 		.join('\n')
 
 	copyToClipboard(text)
-	showToast(successMessage, info)
+	showToast(successMessage, 'info') // Thay 'info' bằng chuỗi 'info'
 }
 
 // Các sự kiện sao chép
