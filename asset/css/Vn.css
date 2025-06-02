@@ -1,0 +1,132 @@
+/* Biến màu từ style.css gốc */
+:root {
+	--button-color: #4caf50;
+	--text-editor-bg: #f9f9f9;
+	--text-editor-gradient: linear-gradient(45deg, #6a82fb, #fc5c7d);
+	--accent-color: #ff4d4d;
+	--reset-color: #1e90ff;
+}
+
+/* Định dạng chung */
+.text-editor-wrapper {
+	margin-top: 20px;
+	padding: 15px;
+	background-color: var(--text-editor-bg);
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	width: 100%;
+}
+
+.text-editor-wrapper h3 {
+	margin-top: 0;
+	color: #333;
+	font-size: 18px;
+	text-align: center;
+}
+
+/* Textarea */
+.text-editor-wrapper textarea {
+	width: 100%;
+	height: 150px;
+	margin-bottom: 10px;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+	resize: vertical;
+	font-family: 'Lexend', sans-serif;
+}
+
+/* Thống kê */
+.text-editor-wrapper .stats {
+	margin-bottom: 10px;
+	color: #333;
+	font-size: 14px;
+}
+
+.text-editor-wrapper .stats span {
+	font-weight: bold;
+	color: var(--button-color);
+}
+
+/* Nút chức năng */
+.text-editor-wrapper button {
+	padding: 8px 16px;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	border: none;
+	border-radius: 5px;
+	background: var(--text-editor-gradient);
+	color: white;
+	cursor: pointer;
+	transition:
+		background-color 0.3s ease,
+		transform 0.2s ease;
+	font-family: 'Lexend', sans-serif;
+	font-size: 14px;
+}
+
+.text-editor-wrapper button:hover {
+	background: linear-gradient(45deg, #5a72eb, #ec4b6d);
+	transform: scale(1.05);
+}
+
+/* Nút Xóa dấu tiếng Việt */
+.text-editor-wrapper #removeAccents {
+	background: linear-gradient(45deg, var(--accent-color), #ff8787);
+}
+
+.text-editor-wrapper #removeAccents:hover {
+	background: linear-gradient(45deg, #e43d3d, #ff8787);
+}
+
+/* Nút Reset */
+.text-editor-wrapper #reset {
+	background: linear-gradient(45deg, var(--reset-color), #6ab7f5);
+}
+
+.text-editor-wrapper #reset:hover {
+	background: linear-gradient(45deg, #1d80ef, #6ab7f5);
+}
+
+/* Input */
+.text-editor-wrapper input {
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-right: 5px;
+	font-family: 'Lexend', sans-serif;
+	font-size: 14px;
+}
+
+/* Phần thay thế dấu cách và tìm kiếm */
+.replace-space-section,
+.find-replace-section {
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.replace-space-section label,
+.find-replace-section label {
+	margin: 0;
+	font-size: 14px;
+}
+
+/* Đảm bảo bố cục responsive */
+@media (max-width: 768px) {
+	.text-editor-wrapper button {
+		width: 100%;
+		margin-bottom: 10px;
+	}
+	.replace-space-section,
+	.find-replace-section {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.text-editor-wrapper input {
+		width: 100%;
+		margin-bottom: 5px;
+	}
+}

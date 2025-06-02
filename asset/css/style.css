@@ -5,10 +5,13 @@
 	box-sizing: border-box;
 }
 body {
-	font-family: Arial, sans-serif;
+	font-family: 'Lexend';
 	margin: 0;
 	padding: 20px;
 	background-color: #f4f4f4;
+}
+.left-panel {
+	width: 50%;
 }
 #uniqueNamesCount {
 	line-height: 1.6;
@@ -38,14 +41,20 @@ body {
 .crawlOption {
 	width: 100%;
 	display: flex;
-
 	flex-direction: column;
+	padding: 15px;
+	background-color: var(--text-editor-bg);
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .buttonIn {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 100%;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	border-radius: 10px;
+	background-color: var(--text-editor-bg);
 }
 #buttonIn_list {
 	gap: 10px;
@@ -172,6 +181,7 @@ h1 {
 .container__input {
 	display: flex;
 	gap: 10px;
+	justify-content: space-between;
 }
 .table-container__list {
 	width: 100%;
@@ -425,7 +435,9 @@ input[type='checkbox']:checked::after {
 	border-radius: 10px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	display: inline-block;
-	transition: transform 0.3s ease, opacity 0.3s ease;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
 }
 .countMovie.false {
 	color: #ff0000;

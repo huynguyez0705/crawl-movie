@@ -1,11 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Kiểm Tra và Hiển Thị URL</title>
+		<link rel="stylesheet" href="./asset/css/Vn.css" />
 		<link rel="stylesheet" href="./asset/css/style.css" />
 		<link rel="icon" type="image/x-icon" href="./asset/favicon_io/favicon.ico" />
+		<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet" />
 	</head>
 	<body>
 		<h1>Kiểm Tra và Hiển Thị URL CỦA KK và OPhim</h1>
@@ -20,7 +22,8 @@
 			</div>
 
 			<div class="container__input">
-				<div class="buttonIn">
+				<!-- Bên trái: buttonIn -->
+				<div class="buttonIn left-panel">
 					<div class="buttonIn__input">
 						<label for="sourceSelect">Chọn nguồn:</label>
 						<select id="sourceSelect">
@@ -39,7 +42,6 @@
 						<button id="getUrltvshow" onclick="getUrlbtn(this)">TV Shows</button>
 					</div>
 					<button id="getUrlsButton">Hiển Thị URL</button>
-					<!-- Radio button chỉ xuất hiện khi chọn KKPhim -->
 					<div class="button-group-horizontal">
 						<a href="./page/releast-movie.html"><button>DS Mới Nhất</button></a>
 						<a href="./page/check-status.html"><button>Check Trạng Thái</button></a>
@@ -47,17 +49,45 @@
 						<a onclick="location.reload()"><button>Làm Mới</button></a>
 					</div>
 				</div>
-				<div class="crawlOption">
-					<div id="crawlSummary">
-						<p><strong>Tổng số phim:</strong> <span id="totalItems">0</span></p>
-						<p><strong>Số phim trên mỗi trang:</strong> <span id="itemsPerPage">0</span></p>
-						<p><strong>Trang hiện tại:</strong> <span id="currentP">0</span></p>
-						<p><strong>Tổng số trang:</strong> <span id="totalPages">0</span></p>
+				<!-- Bên phải: crawlOption (trên) và text-editor-wrapper (dưới) -->
+				<div class="right-panel">
+					<div class="crawlOption">
+						<div id="crawlSummary">
+							<p><strong>Tổng số phim:</strong> <span id="totalItems">0</span></p>
+							<p><strong>Số phim trên mỗi trang:</strong> <span id="itemsPerPage">0</span></p>
+							<p><strong>Trang hiện tại:</strong> <span id="currentP">0</span></p>
+							<p><strong>Tổng số trang:</strong> <span id="totalPages">0</span></p>
+						</div>
+						<div id="crawlModeWrapper" class="crawl-mode-options">
+							<div for="crawlMode">Chọn chế độ Crawl:</div>
+							<label for="crawlTheater">Chiếu rạp</label>
+							<input type="checkbox" name="crawlMode" value="theater" id="crawlTheater" />
+						</div>
 					</div>
-					<div id="crawlModeWrapper" class="crawl-mode-options">
-						<div for="crawlMode">Chọn chế độ Crawl:</div>
-						<label for="crawlTheater">Chiếu rạp</label>
-						<input type="checkbox" name="crawlMode" value="theater" id="crawlTheater" />
+					<div class="text-editor-wrapper">
+						<h3>Công cụ chỉnh sửa văn bản</h3>
+						<textarea id="inputText" placeholder="Nhập văn bản (ví dụ: danh sách URL hoặc tên phim)..."></textarea>
+						<div class="stats">
+							Số từ: <span id="wordCount">0</span> | Số ký tự: <span id="charCount">0</span> | Số dòng: <span id="lineCount">0</span> |
+							Khoảng trắng (space): <span id="spaceCount">0</span>
+						</div>
+						<div>
+							<button onclick="removeVietnameseAccents()" id="removeAccents">Xóa dấu tiếng Việt</button>
+							<button onclick="toUpperCase()" id="toUpper">Sang chữ HOA</button>
+							<button onclick="toLowerCase()" id="toLower">Sang chữ thường</button>
+							<button onclick="toTitleCase()" id="toTitle">Sang chữ cái đầu viết HOA</button>
+							<button onclick="copyText()" id="copy">Copy</button>
+							<button onclick="resetText()" id="reset">Reset</button>
+						</div>
+						<div class="replace-space-section">
+							Thay dấu cách 'space' bằng: <input id="replaceSpaceWith" value="-" style="width: 50px" />
+							<button onclick="replaceSpecificSpace()">Thay</button>
+						</div>
+						<div class="find-replace-section">
+							Tìm ký tự: <input id="findText" value="-" style="width: 50px" /> thay bằng ký tự:
+							<input id="replaceText" value="*" style="width: 50px" />
+							<button onclick="findAndReplace()" id="findReplace">Tìm và thay thế</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -99,5 +129,6 @@
 		<div class="toast-container"></div>
 
 		<script src="./asset/js/index.js"></script>
+		<script src="./asset/js/textEditor.js"></script>
 	</body>
 </html>
