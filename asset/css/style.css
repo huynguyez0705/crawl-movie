@@ -39,13 +39,13 @@ body {
 	font-size: 16px;
 }
 .crawlOption {
-	width: 100%;
 	display: flex;
 	flex-direction: column;
 	padding: 15px;
 	background-color: var(--text-editor-bg);
 	border-radius: 10px;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	width: 50%;
 }
 .buttonIn {
 	display: flex;
@@ -55,6 +55,7 @@ body {
 	padding: 15px;
 	border-radius: 10px;
 	background-color: var(--text-editor-bg);
+	width: 50%;
 }
 #buttonIn_list {
 	gap: 10px;
