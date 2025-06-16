@@ -53,6 +53,7 @@ body {
 	padding: 15px;
 	border-radius: 10px;
 	background-color: var(--text-editor-bg);
+	width: 100%;
 }
 #buttonIn_list {
 	gap: 10px;
@@ -171,7 +172,7 @@ h1 {
 	}
 }
 .status .container__input {
-	width: 50%;
+	width: 100%;
 }
 .index .container__input {
 	width: 100%;

@@ -126,6 +126,9 @@ function displayUrls() {
 	const startPage = parseInt(document.getElementById('startPage').value)
 	const endPage = parseInt(document.getElementById('endPage').value)
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
+	const PageInfo = document.getElementById('currentPageInfo')
+	PageInfo.style.display = 'block'
+	uniqueNamesCount.style.display = 'block'
 	uniqueNamesCount.textContent = 'Đang tải...'
 
 	function fetchAllPages(currentPage) {
