@@ -11,7 +11,7 @@ body {
 	background-color: #f4f4f4;
 }
 .left-panel {
-	width: 50%;
+	flex: 1;
 }
 #uniqueNamesCount {
 	line-height: 1.6;
@@ -25,11 +25,9 @@ body {
 #crawlSummary {
 	width: 100%;
 	display: flex;
-	flex-direction: row;
+	justify-content: space-between;
 }
-#crawlSummary p {
-	width: 25%;
-}
+
 #crawlModeWrapper {
 	margin: 1em;
 	width: 100%;
@@ -45,7 +43,7 @@ body {
 	background-color: var(--text-editor-bg);
 	border-radius: 10px;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	width: 50%;
+	width: 100%;
 }
 .buttonIn {
 	display: flex;
@@ -55,7 +53,6 @@ body {
 	padding: 15px;
 	border-radius: 10px;
 	background-color: var(--text-editor-bg);
-	width: 50%;
 }
 #buttonIn_list {
 	gap: 10px;
