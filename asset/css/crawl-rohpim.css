@@ -441,7 +441,7 @@
 	right: 20px;
 	transform: translateY(-50%);
 	z-index: 1000;
-	width: fit-content;
+	width: 75%;
 }
 
 .crawl-rophim .toast {

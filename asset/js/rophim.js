@@ -3,9 +3,13 @@ let allNonMatchingUrls = []
 let allMatchingUrls = []
 let allLatestItems = {}
 
+// Hàm chờ (để thêm độ trễ giữa các yêu cầu)
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 // Hàm lấy dữ liệu từ URL JSON với phân trang
-function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, years) {
-	let baseUrl = 'https://ripple-lyrical-crocodile.glitch.me/proxy'
+async function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, years) {
+	const baseUrl = apiUrl || 'https://api.rophim.me/v1/movie/filterV2'
+	const proxyUrl = 'https://api.allorigins.win/raw?url=' // Proxy mới
 	const defaultParams = {
 		countries: countries || '',
 		genres: genres || '',
@@ -18,7 +22,7 @@ function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, yea
 		networks: '',
 		productions: '',
 		sort: sort || 'release_date',
-		page: page,
+		page: page || 1,
 		keyword: keyword || ''
 	}
 
@@ -26,34 +30,38 @@ function fetchJsonData(apiUrl, page, sort, keyword, genres, countries, type, yea
 	const existingParams = new URLSearchParams(urlObj.search)
 
 	Object.entries(defaultParams).forEach(([key, value]) => {
-		if (!existingParams.has(key)) {
-			existingParams.set(key, value)
-		}
+		existingParams.set(key, value)
 	})
 
 	urlObj.search = existingParams.toString()
-	let url = urlObj.toString()
+	let url = proxyUrl + encodeURIComponent(urlObj.toString()) // Sử dụng proxy mới
 
 	console.log('Đang lấy dữ liệu từ URL:', url)
 
-	return fetch(url)
-		.then(response => {
-			if (!response.ok) {
-				throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`)
-			}
-			return response.json()
-		})
-		.catch(error => {
-			console.error('Lỗi khi lấy dữ liệu:', error)
-			showToast(`Lỗi khi tải dữ liệu: ${error.message}`, 'error')
-			throw error
-		})
+	try {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`)
+		}
+		return await response.json()
+	} catch (error) {
+		console.error('Lỗi khi lấy dữ liệu:', error)
+		showToast(`Lỗi khi tải dữ liệu: ${error.message}`, 'error')
+		throw error
+	}
 }
 
 // Hàm hiển thị thông báo toast
 function showToast(message, type = 'success') {
 	const toast = document.createElement('div')
 	toast.classList.add('toast')
+	toast.style.position = 'fixed'
+	toast.style.bottom = '20px'
+	toast.style.right = '20px'
+	toast.style.padding = '10px 20px'
+	toast.style.color = '#fff'
+	toast.style.borderRadius = '5px'
+	toast.style.zIndex = '1000'
 
 	if (type === 'success') {
 		toast.style.backgroundColor = '#4caf50'
@@ -68,13 +76,15 @@ function showToast(message, type = 'success') {
 	const closeBtn = document.createElement('span')
 	closeBtn.classList.add('close-btn')
 	closeBtn.textContent = '×'
+	closeBtn.style.marginLeft = '10px'
+	closeBtn.style.cursor = 'pointer'
 	closeBtn.addEventListener('click', () => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
 	})
 	toast.appendChild(closeBtn)
 
-	const toastContainer = document.querySelector('.toast-container')
+	const toastContainer = document.querySelector('.toast-container') || document.body
 	toastContainer.appendChild(toast)
 
 	setTimeout(() => {
@@ -85,22 +95,25 @@ function showToast(message, type = 'success') {
 
 // Hàm trích xuất dữ liệu từ JSON và kiểm tra tên nhập vào
 function getUrls(jsonData, nameList) {
-	let namesToCheck = nameList.split('\n').map(name => name.trim().toLowerCase())
+	let namesToCheck = nameList
+		.split('\n')
+		.map(name => name.trim().toLowerCase())
+		.filter(name => name)
 	let latestItems = {}
 
-	let items = jsonData.result.items || []
+	let items = jsonData.result?.items || []
 
 	if (!Array.isArray(items)) {
 		console.error('Dữ liệu items không hợp lệ:', items)
-		showToast('Dữ liệu items không hợp lệ:', 'error')
+		showToast('Dữ liệu items không hợp lệ', 'error')
 		return { nonMatchingUrls: [], matchingUrls: [], latestItems: {} }
 	}
 
 	items.forEach(item => {
-		const itemName = item.title.toLowerCase()
+		const itemName = item.title?.toLowerCase()
 		const itemTime = new Date(item.release_date)
 
-		if (!latestItems[itemName] || itemTime > new Date(latestItems[itemName].release_date)) {
+		if (itemName && (!latestItems[itemName] || itemTime > new Date(latestItems[itemName].release_date))) {
 			latestItems[itemName] = item
 		}
 	})
@@ -109,10 +122,10 @@ function getUrls(jsonData, nameList) {
 	let matchingUrls = []
 
 	Object.values(latestItems).forEach(item => {
-		const title = item.title
+		const title = item.title || 'N/A'
 		const englishTitle = item.english_title || 'Không có'
-		const slug = item.slug
-		const id = item._id
+		const slug = item.slug || 'N/A'
+		const id = item._id || 'N/A'
 
 		const url = `https://rophim.com/phim/${slug}|${id}|${title}|${englishTitle}`
 
@@ -126,24 +139,23 @@ function getUrls(jsonData, nameList) {
 	return { nonMatchingUrls, matchingUrls, latestItems }
 }
 
-// Hàm lấy danh sách các giá trị active từ một nhóm filter (cho multi-select)
+// Hàm lấy danh sách các giá trị active từ một nhóm filter
 function getActiveFilterValues(groupId) {
 	const buttons = document.querySelectorAll(`#${groupId} .filter-btn.active`)
 	const values = Array.from(buttons)
 		.map(btn => btn.getAttribute('data-value'))
-		.filter(value => value !== '') // Loại bỏ giá trị "Tất cả"
+		.filter(value => value !== '')
 	return values.length > 0 ? values.join(',') : ''
 }
 
 // Hàm hiển thị kết quả
-function displayUrls() {
-	const apiUrl = document.getElementById('apiUrl').value
-	const nameList = document.getElementById('nameList').value
-	const startPage = parseInt(document.getElementById('startPage').value)
-	const endPage = parseInt(document.getElementById('endPage').value)
-	const keyword = document.getElementById('keyword').value
+async function displayUrls() {
+	const apiUrl = document.getElementById('apiUrl')?.value || ''
+	const nameList = document.getElementById('nameList')?.value || ''
+	const startPage = parseInt(document.getElementById('startPage')?.value) || 1
+	const endPage = parseInt(document.getElementById('endPage')?.value) || 1
+	const keyword = document.getElementById('keyword')?.value || ''
 
-	// Lấy giá trị từ các nhóm filter
 	const sortButton = document.querySelector('#sort-buttons .filter-btn.active')
 	const sort = sortButton ? sortButton.getAttribute('data-value') : 'release_date'
 	const genres = getActiveFilterValues('genres-buttons')
@@ -152,9 +164,6 @@ function displayUrls() {
 	const type = typeButton ? typeButton.getAttribute('data-value') : ''
 	const years = getActiveFilterValues('years-buttons')
 
-	console.log('Giá trị sắp xếp:', sort)
-	console.log('Giá trị loại phim:', type)
-
 	const uniqueNamesCount = document.getElementById('uniqueNamesCount')
 	uniqueNamesCount.textContent = 'Đang tải...'
 
@@ -162,54 +171,50 @@ function displayUrls() {
 	allMatchingUrls = []
 	allLatestItems = {}
 
-	function fetchAllPages(currentPage) {
-		const totalPages = endPage - startPage + 1
-		const progressElement = document.getElementById('loadingProgress')
-		const progressWrapper = document.getElementById('progressWrapper')
+	const progressElement = document.getElementById('progressWrapper')
+	if (progressElement) progressElement.style.display = 'block'
 
-		progressWrapper.style.display = 'block'
-
+	for (let currentPage = startPage; currentPage <= endPage; currentPage++) {
 		const currentPageElement = document.getElementById('currentPage')
 		const currentPElement = document.getElementById('currentP')
 
-		currentPageElement.classList.add('jump')
-		currentPageElement.textContent = currentPage
-		currentPElement.textContent = currentPage
-
-		setTimeout(() => {
-			currentPageElement.classList.remove('jump')
-		}, 300)
-
-		const progressValue = ((endPage - currentPage) / totalPages) * 100
-		progressElement.value = progressValue
-
-		if (currentPage < startPage) {
-			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
-			showToast(`Hoàn thành ${currentPage + 1} Page`)
-			updateTableWithMessage('nonMatchingTable', allNonMatchingUrls, 'Không có phim không trùng khớp.')
-			updateTableWithMessage('matchingTable', allMatchingUrls, 'Không có phim trùng khớp.')
-			return
+		if (currentPageElement && currentPElement) {
+			currentPageElement.classList.add('jump')
+			currentPageElement.textContent = currentPage
+			currentPElement.textContent = currentPage
+			setTimeout(() => currentPageElement.classList.remove('jump'), 300)
 		}
 
-		fetchJsonData(apiUrl, currentPage, sort, keyword, genres, countries, type, years)
-			.then(jsonData => {
-				updateCrawlSummary(jsonData)
-				const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList)
-				allNonMatchingUrls = allNonMatchingUrls.concat(nonMatchingUrls)
-				allMatchingUrls = allMatchingUrls.concat(matchingUrls)
-				Object.assign(allLatestItems, latestItems)
+		try {
+			const jsonData = await fetchJsonData(apiUrl, currentPage, sort, keyword, genres, countries, type, years)
+			updateCrawlSummary(jsonData)
+			const { nonMatchingUrls, matchingUrls, latestItems } = getUrls(jsonData, nameList)
 
-				updateTableWithMessage('nonMatchingTable', allNonMatchingUrls, 'Không có phim không trùng khớp.')
-				updateTableWithMessage('matchingTable', allMatchingUrls, 'Không có phim trùng khớp.')
+			allNonMatchingUrls = [...allNonMatchingUrls, ...nonMatchingUrls]
+			allMatchingUrls = [...allMatchingUrls, ...matchingUrls]
+			Object.assign(allLatestItems, latestItems)
 
-				fetchAllPages(currentPage - 1)
-			})
-			.catch(error => {
-				console.error('Lỗi khi tải JSON:', error)
-				showToast('Không thể lấy dữ liệu từ API. Vui lòng kiểm tra URL.', 'error')
-			})
+			updateTableWithMessage('nonMatchingTable', allNonMatchingUrls, 'Không có phim không trùng khớp.')
+			updateTableWithMessage('matchingTable', allMatchingUrls, 'Không có phim trùng khớp.')
+
+			uniqueNamesCount.textContent = `Số lượng phim hiện tại: ${Object.keys(allLatestItems).length}`
+			showToast(`Hoàn thành trang ${currentPage}`)
+
+			// Tăng độ trễ lên 2 giây để tránh rate limiting
+			await delay(2000)
+		} catch (error) {
+			console.error('Lỗi khi crawl trang:', currentPage, error)
+			showToast(`Lỗi khi crawl trang ${currentPage}: ${error.message}`, 'error')
+		}
+
+		const progressBar = document.getElementById('loadingProgress')
+		if (progressBar) {
+			const progressValue = ((currentPage - startPage + 1) / (endPage - startPage + 1)) * 100
+			progressBar.value = progressValue
+		}
 	}
-	fetchAllPages(endPage)
+
+	if (progressElement) progressElement.style.display = 'none'
 }
 
 // Hàm cập nhật bảng với thông báo
@@ -232,23 +237,13 @@ function updateTableWithMessage(tableId, items, message) {
 	} else {
 		items.forEach((item, index) => {
 			const row = document.createElement('tr')
-			const sttCell = document.createElement('td')
-			const titleCell = document.createElement('td')
-			const englishTitleCell = document.createElement('td')
-			const slugCell = document.createElement('td')
-			const idCell = document.createElement('td')
-
-			sttCell.textContent = index + 1
-			titleCell.textContent = item.title
-			englishTitleCell.textContent = item.englishTitle
-			slugCell.textContent = item.slug
-			idCell.textContent = item.id
-
-			row.appendChild(sttCell)
-			row.appendChild(titleCell)
-			row.appendChild(englishTitleCell)
-			row.appendChild(slugCell)
-			row.appendChild(idCell)
+			row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.title}</td>
+                <td>${item.englishTitle}</td>
+                <td>${item.slug}</td>
+                <td>${item.id}</td>
+            `
 			tableBody.appendChild(row)
 		})
 	}
@@ -256,38 +251,33 @@ function updateTableWithMessage(tableId, items, message) {
 
 // Hàm cập nhật thông tin crawl
 function updateCrawlSummary(jsonData) {
-	const totalItems = jsonData.result.item_count || 0
-	const itemsPerPage = jsonData.result.items.length || 0
-	const totalPages = jsonData.result.page_count || 0
+	const totalItems = document.getElementById('totalItems')
+	const itemsPerPage = document.getElementById('itemsPerPage')
+	const totalPages = document.getElementById('totalPages')
 
-	document.getElementById('totalItems').textContent = totalItems
-	document.getElementById('itemsPerPage').textContent = itemsPerPage
-	document.getElementById('currentP').textContent = jsonData.result.items.length ? 1 : 0
-	document.getElementById('totalPages').textContent = totalPages
+	if (totalItems) totalItems.textContent = jsonData.result?.item_count || 0
+	if (itemsPerPage) itemsPerPage.textContent = jsonData.result?.items?.length || 0
+	if (totalPages) totalPages.textContent = jsonData.result?.page_count || 0
 }
 
 // Hàm sao chép nội dung vào clipboard
 function copyToClipboard(text) {
 	navigator.clipboard
 		.writeText(text)
-		.then(() => {
-			showToast('Đã sao chép thành công!')
-		})
+		.then(() => showToast('Đã sao chép thành công!'))
 		.catch(err => {
 			showToast('Lỗi khi sao chép: ' + err, 'error')
 			console.error('Lỗi khi sao chép:', err)
 		})
 }
 
-// Hàm copy toàn bộ 5 cột (bao gồm tiêu đề và STT)
+// Hàm copy toàn bộ 5 cột
 function copyAllColumns(tableId, isMatching) {
 	const items = isMatching ? allMatchingUrls : allNonMatchingUrls
 	let text = 'STT\tTên\tTên Tiếng Anh\tSlug\tID\n'
-
 	items.forEach((item, index) => {
 		text += `${index + 1}\t${item.title}\t${item.englishTitle}\t${item.slug}\t${item.id}\n`
 	})
-
 	copyToClipboard(text)
 }
 
@@ -316,7 +306,22 @@ function copySlugs(isMatching) {
 function copyIds(isMatching) {
 	const items = isMatching ? allMatchingUrls : allNonMatchingUrls
 	const ids = items.map(item => item.id).join('\n')
-	copyToClipboard(slugs)
+	copyToClipboard(ids)
+}
+
+// Hàm làm mới dữ liệu
+function resetData() {
+	allNonMatchingUrls = []
+	allMatchingUrls = []
+	allLatestItems = {}
+	document.getElementById('uniqueNamesCount').textContent = 'Số lượng phim hiện tại: 0'
+	document.getElementById('totalItems').textContent = '0'
+	document.getElementById('itemsPerPage').textContent = '0'
+	document.getElementById('currentP').textContent = '0'
+	document.getElementById('totalPages').textContent = '0'
+	updateTableWithMessage('nonMatchingTable', [], 'Không có phim không trùng khớp.')
+	updateTableWithMessage('matchingTable', [], 'Không có phim trùng khớp.')
+	showToast('Đã làm mới dữ liệu', 'success')
 }
 
 // Gắn sự kiện sau khi DOM tải xong
@@ -338,15 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
 					const allButton = groupElement.querySelector('.filter-btn[data-value=""]')
 
 					if (isAllButton) {
-						// Nếu chọn "Tất cả", bỏ chọn tất cả các nút khác
 						buttons.forEach(b => b.classList.remove('active'))
 						btn.classList.add('active')
 					} else {
-						// Nếu chọn nút khác, bỏ chọn "Tất cả" và toggle trạng thái nút hiện tại
 						allButton.classList.remove('active')
 						btn.classList.toggle('active')
-
-						// Nếu không còn nút nào được chọn, chọn lại "Tất cả"
 						const activeButtons = groupElement.querySelectorAll('.filter-btn.active')
 						if (activeButtons.length === 0) {
 							allButton.classList.add('active')
@@ -369,9 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			buttons.forEach(btn => {
 				btn.addEventListener('click', () => {
 					console.log(`${group.label}: ${btn.textContent}`)
-					// Xóa class active khỏi tất cả các nút trong cùng nhóm
 					buttons.forEach(b => b.classList.remove('active'))
-					// Thêm class active cho nút được click
 					btn.classList.add('active')
 				})
 			})
@@ -395,27 +394,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 	}
 
-	const getUrlsButton = document.getElementById('getUrlsButton')
-	const copyAllNonMatchingButton = document.getElementById('copyAllNonMatchingButton')
-	const copyNonMatchingNamesButton = document.getElementById('copyNonMatchingNamesButton')
-	const copyNonMatchingEnglishNamesButton = document.getElementById('copyNonMatchingEnglishNamesButton')
-	const copyNonMatchingSlugsButton = document.getElementById('copyNonMatchingSlugsButton')
-	const copyNonMatchingIdsButton = document.getElementById('copyNonMatchingIdsButton')
-	const copyAllMatchingButton = document.getElementById('copyAllMatchingButton')
-	const copyMatchingNamesButton = document.getElementById('copyMatchingNamesButton')
-	const copyMatchingEnglishNamesButton = document.getElementById('copyMatchingEnglishNamesButton')
-	const copyMatchingSlugsButton = document.getElementById('copyMatchingSlugsButton')
-	const copyMatchingIdsButton = document.getElementById('copyMatchingIdsButton')
-
-	if (getUrlsButton) getUrlsButton.addEventListener('click', displayUrls)
-	if (copyAllNonMatchingButton) copyAllNonMatchingButton.addEventListener('click', () => copyAllColumns('nonMatchingTable', false))
-	if (copyNonMatchingNamesButton) copyNonMatchingNamesButton.addEventListener('click', () => copyNames(false))
-	if (copyNonMatchingEnglishNamesButton) copyNonMatchingEnglishNamesButton.addEventListener('click', () => copyEnglishNames(false))
-	if (copyNonMatchingSlugsButton) copyNonMatchingSlugsButton.addEventListener('click', () => copySlugs(false))
-	if (copyNonMatchingIdsButton) copyNonMatchingIdsButton.addEventListener('click', () => copyIds(false))
-	if (copyAllMatchingButton) copyAllMatchingButton.addEventListener('click', () => copyAllColumns('matchingTable', true))
-	if (copyMatchingNamesButton) copyMatchingNamesButton.addEventListener('click', () => copyNames(true))
-	if (copyMatchingEnglishNamesButton) copyMatchingNamesButton.addEventListener('click', () => copyEnglishNames(true))
-	if (copyMatchingSlugsButton) copyMatchingSlugsButton.addEventListener('click', () => copySlugs(true))
-	if (copyMatchingIdsButton) copyMatchingIdsButton.addEventListener('click', () => copyIds(true))
+	// Gắn sự kiện cho các nút
+	document.getElementById('getUrlsButton')?.addEventListener('click', displayUrls)
+	document.getElementById('resetButton')?.addEventListener('click', resetData)
+	document.getElementById('copyAllNonMatchingButton')?.addEventListener('click', () => copyAllColumns('nonMatchingTable', false))
+	document.getElementById('copyNonMatchingNamesButton')?.addEventListener('click', () => copyNames(false))
+	document.getElementById('copyNonMatchingEnglishNamesButton')?.addEventListener('click', () => copyEnglishNames(false))
+	document.getElementById('copyNonMatchingSlugsButton')?.addEventListener('click', () => copySlugs(false))
+	document.getElementById('copyNonMatchingIdsButton')?.addEventListener('click', () => copyIds(false))
+	document.getElementById('copyAllMatchingButton')?.addEventListener('click', () => copyAllColumns('matchingTable', true))
+	document.getElementById('copyMatchingNamesButton')?.addEventListener('click', () => copyNames(true))
+	document.getElementById('copyMatchingEnglishNamesButton')?.addEventListener('click', () => copyEnglishNames(true))
+	document.getElementById('copyMatchingSlugsButton')?.addEventListener('click', () => copySlugs(true))
+	document.getElementById('copyMatchingIdsButton')?.addEventListener('click', () => copyIds(true))
 })
