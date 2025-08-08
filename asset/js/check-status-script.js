@@ -1,4 +1,3 @@
-// Hàm kiểm tra trạng thái các URL
 document.getElementById('checkUrlsButton').addEventListener('click', () => {
 	const urlList = document.getElementById('urlList').value.trim().split('\n')
 	const urlStatusTable = document.getElementById('urlStatusTable')
@@ -19,7 +18,6 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 		if (url) {
 			if (!validateURL(url)) {
 				showToast(`URL không hợp lệ: ${url}`, 'error')
-
 				return // Dừng việc xử lý với URL không hợp lệ
 			}
 			checkUrlStatus(url)
@@ -48,7 +46,7 @@ document.getElementById('checkUrlsButton').addEventListener('click', () => {
 					}
 				})
 		} else {
-			statusResults[index] = { name: '', url, url: '', status: false, fullUrl: '', type: '', chieurap: false }
+			statusResults[index] = { name: '', url, status: false, fullUrl: '', type: '', chieurap: false }
 		}
 	})
 })
@@ -67,7 +65,7 @@ function displayResults(results) {
 
 	results.forEach(({ name, url, fullUrl, status, type, chieurap }) => {
 		const row = document.createElement('tr')
-		//Taọ cột Name
+		// Tạo cột Name
 		const urlName = document.createElement('td')
 		urlName.textContent = name
 		row.appendChild(urlName)
@@ -134,36 +132,54 @@ function displayResults(results) {
 	showToast('Hoàn thành')
 }
 
-// Hàm hiển thị thông báo (toast)
-
 // Hàm kiểm tra trạng thái URL và trả về full URL nếu trạng thái là true
 async function checkUrlStatus(url) {
+	// Danh sách ánh xạ domain
+	const domainMap = {
+		'ophim17.cc': 'ophim1.com',
+		'www.kkphim.vip': 'phimapi.com'
+	}
+
 	try {
-		const response = await fetch(url)
+		let modifiedUrl = url
+
+		// Chuyển đổi domain nếu có trong domainMap
+		for (const [source, target] of Object.entries(domainMap)) {
+			if (url.includes(source)) {
+				modifiedUrl = url.replace(source, target)
+			}
+		}
+
+		// Chuyển đổi /v1/api/phim/ thành /phim/ nếu có
+		if (modifiedUrl.includes('ophim1.com/v1/api/phim/')) {
+			modifiedUrl = modifiedUrl.replace('/v1/api/phim/', '/phim/')
+		}
+
+		// Gửi yêu cầu đến URL đã chuyển đổi
+		const response = await fetch(modifiedUrl)
 		const data = await response.json()
 
 		// Kiểm tra nếu status là true và đảm bảo rằng các trường movie và thông tin cần thiết có mặt
 		if (data.status === true || data.status === 'success') {
-			const type = data.movie.type || '' // Lấy type, nếu không có trả về chuỗi rỗng
-
+			const type = data.movie.type || ''
 			const name = data.movie.name
 			const modifiedTime = data.movie.modified?.time ?? data.movie.modified ?? ''
 			const originName = data.movie?.origin_name ?? data.movie?.original_name ?? ''
 			const id = data.movie?._id ?? data.movie?.id ?? ''
-			// Tạo full URL
-			const fullUrl = `${url}|${id}|${modifiedTime}|${data.movie.name}|${originName}|${data.movie.year}`
-			return { name: name, status: true, fullUrl: fullUrl, type: type }
+			// Tạo full URL dựa trên URL đã chuyển đổi
+			const fullUrl = `${modifiedUrl}|${id}|${modifiedTime}|${data.movie.name}|${originName}|${data.movie.year}`
+			return { name: name, status: true, fullUrl: fullUrl, type: type, chieurap: data.movie.chieurap || false }
 		} else {
-			// Trả về dữ liệu mặc định khi không có thông tin hợp lệ
-			return { name: '', status: false, fullUrl: '', type: '' }
+			return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
 		}
 	} catch (error) {
-		// Xử lý khi có lỗi trong quá trình fetch dữ liệu
 		console.error('Lỗi khi lấy dữ liệu từ URL:', error)
 		showToast('Lỗi khi lấy dữ liệu từ URL: ' + error, 'error')
-		return { name: '', status: false, fullUrl: '', type: '' }
+		return { name: '', status: false, fullUrl: '', type: '', chieurap: false }
 	}
 }
+
+// Hàm hiển thị thông báo (toast)
 function showToast(message, type = 'success') {
 	const toast = document.createElement('div')
 	toast.classList.add('toast', 'show')
@@ -191,14 +207,13 @@ function showToast(message, type = 'success') {
 	const toastContainer = document.querySelector('.toast-container')
 	toastContainer.appendChild(toast)
 
-	// Tự động ẩn toast sau 10 giây
+	// Tự động ẩn toast sau 3 giây
 	setTimeout(() => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
 	}, 3000)
 }
 
-// Hàm sao chép trạng thái vào clipboard
 // Hàm sao chép văn bản vào clipboard
 function copyToClipboard(text) {
 	navigator.clipboard.writeText(text).catch(err => {
@@ -215,7 +230,7 @@ function copyColumn(columnIndex, successMessage) {
 		.join('\n')
 
 	copyToClipboard(text)
-	showToast(successMessage, 'info') // Thay 'info' bằng chuỗi 'info'
+	showToast(successMessage, 'info')
 }
 
 // Các sự kiện sao chép
