@@ -43,13 +43,19 @@
 						<th>URL Hoàn Chỉnh</th>
 						<th>Trạng Thái</th>
 						<th>Danh mục</th>
+						<th>Xem</th>
 					</tr>
 				</thead>
 				<tbody id="urlStatusTable"></tbody>
 			</table>
 		</div>
 		<div class="toast-container"></div>
-
+		<!-- Popup -->
+		<div class="overlay" id="popupOverlay"></div>
+		<div class="popup" id="popup">
+			<span class="popup-close" id="popupClose">×</span>
+			<pre class="popup-content" id="popupContent"></pre>
+		</div>
 		<script src="../asset/js/check-status-script.js"></script>
 	</body>
 </html>

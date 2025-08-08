@@ -77,7 +77,7 @@ function displayResults(results) {
 
 		// Tạo cột URL hoàn chỉnh
 		const fullUrlCell = document.createElement('td')
-		fullUrlCell.textContent = status ? fullUrl : 'None' // Hiển thị full URL chỉ khi trạng thái là true
+		fullUrlCell.textContent = status ? fullUrl : 'None'
 		row.appendChild(fullUrlCell)
 
 		// Tạo cột trạng thái
@@ -86,28 +86,31 @@ function displayResults(results) {
 		statusCell.style.color = status ? 'green' : 'red'
 		row.appendChild(statusCell)
 
-		// Tạo cột danh mục (Type và Chieurap kết hợp trong một cột)
+		// Tạo cột danh mục
 		const categoriesCell = document.createElement('td')
 		let categoriesText = ''
-
-		// Nếu type có giá trị, chúng ta sẽ hiển thị
 		if (status) {
 			categoriesText += type === 'single_movies' || type === 'single' ? 'Phim Lẻ' : ''
 			categoriesText += type === 'hoathinh' ? 'Hoạt Hình' : ''
 			categoriesText += type === 'tvshows' ? 'TV Shows' : ''
 			categoriesText += type === 'tv_series' || type === 'series' ? 'Phim bộ' : ''
 		}
-
-		// Nếu chieurap là true, thêm "Phim chiếu rạp"
 		if (chieurap) {
-			if (categoriesText) {
-				categoriesText += ', ' // Thêm dấu phẩy nếu đã có loại
-			}
+			if (categoriesText) categoriesText += ', '
 			categoriesText += 'Phim chiếu rạp'
 		}
-
 		categoriesCell.textContent = categoriesText
 		row.appendChild(categoriesCell)
+
+		// Tạo cột Xem
+		const viewCell = document.createElement('td')
+		const viewButton = document.createElement('button')
+		viewButton.textContent = 'Xem'
+		viewButton.classList.add('btn-view') // Thêm class tại đây
+		viewButton.disabled = !status // Vô hiệu hóa nếu trạng thái là False
+		viewButton.addEventListener('click', () => showPopup(fullUrl))
+		viewCell.appendChild(viewButton)
+		row.appendChild(viewCell)
 
 		// Thêm dòng vào bảng
 		urlStatusTable.appendChild(row)
@@ -117,19 +120,46 @@ function displayResults(results) {
 	})
 
 	// Cập nhật thông tin số lượng tên duy nhất
-	uniqueNamesCount.innerHTML = `Phim crawl được  <span class="countMovie">${countTrue} </span>
-	<span class="line-break"> Phim không crawl được <span class="countMovie false">${countFalse} </span></span>`
+	uniqueNamesCount.innerHTML = `Phim crawl được <span class="countMovie">${countTrue}</span>
+	<span class="line-break">Phim không crawl được <span class="countMovie false">${countFalse}</span></span>`
 
-	// Hiển thị thông báo thành công nếu có phim crawl thành công
-	if (countTrue > 0) {
-		showToast(`Có ${countTrue} phim crawl hoàn thành`, 'success')
-	}
-
-	// Hiển thị thông báo lỗi nếu có phim không crawl được
-	if (countFalse > 0) {
-		showToast(`Có ${countFalse} phim không crawl được`, 'error')
-	}
+	// Hiển thị thông báo
+	if (countTrue > 0) showToast(`Có ${countTrue} phim crawl hoàn thành`, 'success')
+	if (countFalse > 0) showToast(`Có ${countFalse} phim không crawl được`, 'error')
 	showToast('Hoàn thành')
+}
+
+// Hàm hiển thị popup
+async function showPopup(fullUrl) {
+	const popup = document.getElementById('popup')
+	const popupContent = document.getElementById('popupContent')
+	const popupOverlay = document.getElementById('popupOverlay')
+	const popupClose = document.getElementById('popupClose')
+
+	// Lấy phần URL trước dấu |
+	const apiUrl = fullUrl.split('|')[0]
+
+	try {
+		const response = await fetch(apiUrl)
+		const data = await response.json()
+		popupContent.textContent = JSON.stringify(data, null, 2) // Hiển thị JSON đẹp
+	} catch (error) {
+		popupContent.textContent = `Lỗi khi lấy dữ liệu: ${error}`
+	}
+	// popupContent.innerHTML = `<a href="${apiUrl}" target="_blank">${apiUrl}</a>`
+	// Hiển thị popup và overlay
+	popup.style.display = 'block'
+	popupOverlay.style.display = 'block'
+
+	// Đóng popup
+	popupClose.addEventListener('click', () => {
+		popup.style.display = 'none'
+		popupOverlay.style.display = 'none'
+	})
+	popupOverlay.addEventListener('click', () => {
+		popup.style.display = 'none'
+		popupOverlay.style.display = 'none'
+	})
 }
 
 // Hàm kiểm tra trạng thái URL và trả về full URL nếu trạng thái là true
@@ -166,7 +196,6 @@ async function checkUrlStatus(url) {
 			const modifiedTime = data.movie.modified?.time ?? data.movie.modified ?? ''
 			const originName = data.movie?.origin_name ?? data.movie?.original_name ?? ''
 			const id = data.movie?._id ?? data.movie?.id ?? ''
-			// Tạo full URL dựa trên URL đã chuyển đổi
 			const fullUrl = `${modifiedUrl}|${id}|${modifiedTime}|${data.movie.name}|${originName}|${data.movie.year}`
 			return { name: name, status: true, fullUrl: fullUrl, type: type, chieurap: data.movie.chieurap || false }
 		} else {
@@ -183,17 +212,14 @@ async function checkUrlStatus(url) {
 function showToast(message, type = 'success') {
 	const toast = document.createElement('div')
 	toast.classList.add('toast', 'show')
-
 	if (type === 'success') {
-		toast.style.backgroundColor = '#4caf50' // Màu xanh cho thành công
+		toast.style.backgroundColor = '#4caf50'
 	} else if (type === 'error') {
-		toast.style.backgroundColor = '#f44336' // Màu đỏ cho lỗi
+		toast.style.backgroundColor = '#f44336'
 	} else if (type === 'info') {
-		toast.style.backgroundColor = '#2196F3' // Màu xanh dương cho thông tin
+		toast.style.backgroundColor = '#2196F3'
 	}
-
 	toast.textContent = message
-
 	const closeBtn = document.createElement('span')
 	closeBtn.classList.add('close-btn')
 	closeBtn.textContent = '×'
@@ -202,12 +228,8 @@ function showToast(message, type = 'success') {
 		setTimeout(() => toast.remove(), 500)
 	})
 	toast.appendChild(closeBtn)
-
-	// Thêm toast vào container
 	const toastContainer = document.querySelector('.toast-container')
 	toastContainer.appendChild(toast)
-
-	// Tự động ẩn toast sau 3 giây
 	setTimeout(() => {
 		toast.classList.add('hide')
 		setTimeout(() => toast.remove(), 500)
@@ -226,9 +248,8 @@ function copyColumn(columnIndex, successMessage) {
 	const cells = Array.from(document.querySelectorAll(`#urlStatusTable td:nth-child(${columnIndex})`))
 	const text = cells
 		.map(cell => cell.textContent)
-		.filter(text => text) // Lọc bỏ các ô trống
+		.filter(text => text)
 		.join('\n')
-
 	copyToClipboard(text)
 	showToast(successMessage, 'info')
 }
