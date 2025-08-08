@@ -167,7 +167,8 @@ async function checkUrlStatus(url) {
 	// Danh sách ánh xạ domain
 	const domainMap = {
 		'ophim17.cc': 'ophim1.com',
-		'www.kkphim.vip': 'phimapi.com'
+		'www.kkphim.vip': 'phimapi.com',
+		'kkphim.vip': 'phimapi.com'
 	}
 
 	try {
