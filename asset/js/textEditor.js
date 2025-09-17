@@ -106,9 +106,13 @@ function toLowerCase() {
 }
 
 function toTitleCase() {
-	inputText.value = inputText.value.toLowerCase().replace(/(^|\s)\w/g, char => char.toUpperCase())
-	updateStats()
+    inputText.value = inputText.value
+        .toLowerCase()
+        .replace(/(?:^|\s)\w/g, (match) => match.toUpperCase())  // Chuyển chữ cái đầu của mỗi từ thành hoa
+        .replace(/\bđ/g, 'Đ')  // Đặc biệt xử lý 'đ' -> 'Đ'
+    updateStats()
 }
+
 
 function copyText() {
 	inputText.select()
