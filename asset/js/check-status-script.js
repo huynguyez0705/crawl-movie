@@ -168,7 +168,8 @@ async function checkUrlStatus(url) {
 	const domainMap = {
 		'kkphim.vip': 'phimapi.com',
 		'www.kkphim.vip': 'phimapi.com',
-		'ophim17.cc': 'ophim1.com'
+		'ophim17.cc': 'ophim1.com',
+		'ophim18.cc': 'ophim1.com'
 	}
 
 	try {
